@@ -65,7 +65,9 @@ Ein weiterer wichtiger Begriff, welcher vor allem zur Abschätzung der Zuverläs
 Ein deterministisches System zeichnet sich dadurch aus, dass für jeden möglichen Zustand und jeden möglichen Eingabevektor der Folgezustand sowie Ausgaben bestimmt werden können.
 \end{definition}
 Ist dies für ein System der Fall, so lässt sich sein gesamtes Verhalten bestimmen und jede mögliche Verletzung von Deadlines ist im Vorfeld bestimmbar.\\
-Im Folgenden wird jedoch gezeigt, dass viele Optimierungsmethoden Nichtdeterminismus mit sich ziehen.
+Bei einem nicht-deterministischen System besteht die Herausforderung darin, Laufzeiten realistisch abzuschätzen. Hier wird in best- und worst-case Zeiten argumentiert, also minimale- bzw. maximale Zeitspannen für die Beendigung einer Aufgabe.\\
+Wird immer die bestmögliche Zeit angenommen, so wird dies bei Nichtdeterminismus unweigerlich zu verpassten Deadlines führen. Im anderen Fall, also der konstanten Annahme von worst-case Zeiten werden Deadlines immer eingehalten werden, jedoch wird das System nicht optimal ausgenutzt. Diese Zeiten abschätzen zu können führt also zu einer Optimierung der Effizienz.\\
+Im Folgenden wird gezeigt, dass viele Optimierungsmethoden Nichtdeterminismus mit sich führen.
 \subsection{Speicher}\label{2.2}
 Es lassen sich verschiedene Arten von Speicher angeben. Dabei spielen nicht nur Schreib- und Lesezeiten, Kosten und die Flächennutzung eine Rolle, sondern auch Energieverbrauch und die Möglichkeit des Schreibens neuer Daten. Hierzu werden im Folgenden auf die Arten RAM, ROM sowie Flash-Speicher eingegangen. Ebenfalls wird der Unterschied zwischen dynamischem und statischem RAM deutlich gemacht.
 
@@ -81,8 +83,36 @@ Die Speicherung ist persistenter Natur, weswegen ROM in der Regel fest verdrahte
 Flash-Speicher, auch Flash-EEPROM (Electrically Erasable Programmable Read-only Memory) ist eine erweiterte Form des normalen ROMs. Im Gegensatz zu EEPROM können einzelne Bytes nicht überschrieben werden.\\
 Dank der Natur des ROM-Speichers sind Daten jedoch persistent gespeichert. Ebenso ist der Energieverbrauch verhältnismäßig gering, und die Kosten sind ebenfalls minimal. Somit bietet der Flash-Speicher eine robuste, kosteneffiziente Lösung für eingebettete Systeme.
 
+\subsubsection{Cache}
+Der Cache bezeichnet eine Speicherschicht zwischen dem Prozessor und dem Hauptspeicher. Zweck dieser Schicht ist es, Daten temporär zu speichern, um diese bei Anfrage schneller als der eigentliche Hauptspeicher zur Verfügung stellen zu können. Es ist ersichtlich, dass ein Cache in der Regel mittels Random-Access Memory realisiert wird.\\
+Der Nachteil besteht darin, dass der Zugriff auf nicht im Cache verfügbare Daten länger dauert als bei einer Realisierung ohne Cache. Zunächst werden die Daten angefordert, anschließend wird überprüft, ob diese Daten im Cache vorliegen. Diese Zeitspanne würde bei direktem Zugriff auf den Hauptspeicher entfallen. Somit ergibt sich das Problem, eben jene Wahrscheinlichkeit, Daten im Cache vorzufinden zu maximieren.\\
+Ein weiterer Nachteil folgt aus der nicht-deterministischen Zugriffszeit auf Daten, da man im Vorfeld nicht abschätzen kann, ob sich ein bestimmtes Datum im Cache befindet.
+
+\subsubsection{Locality of reference}
+Der Begriff 'Locality of reference' bezeichnet das Phänomen, bei dem entweder die gleiche Speicherstelle, oder der gleiche Datenwert oft genutzt wird. Diese werden respektiv mit räumlicher- und zeitliche Lokalität bezeichnet. Im Kontext des Caches werden häufig angeforderte Daten, oder auch zusammenhängende Datenblöcke wie ein sequentiell ausgeführtes Programm abgespeichert, um diese in Zukunft mit sehr geringer Zugriffszeit anzufordern. Werden vielen Daten häufig angefordert, oder liegt der Code sehr oft in aufeinanderfolgenden Speicherzellen vor, so liegt eine hohe locality of reference vor. Je höher dieser Wert ist, desto eher liegen angeforderte Daten im Cache, und desto geringer wird die durchschnittliche Zugriffszeit.
+
+\subsubsection{Anwendung bei einem DSP}
+In der Regel wird bei einem DSP sowohl RAM- als auch ROM genutzt. Am Beispiel \cite{TI} sieht man die Nutzung eines Read-Only Memory Blocks als Speicher für den Bootloader, sowie eine $8k$Bytes RAM-Speichereinheit als Datenspeicher. Dieser Speicher reicht aus, da ein- und ausgehende Daten nicht persistent auf dem DSP gespeichert werden, sondern lediglich zur Berechnung vorliegen.\\
+Des weiteren lässt sich erkennen, dass ein $512$Byte Instruction Cache vorliegt. In der Regel werden bei einem DSP wenige Befehle benötigt, die für alle eingehenden Daten genutzt werden. Somit ist es sinnig, diese Befehle auf einem Cache zwischenzuspeichern, um diese of auftretende Zugriffszeit zu minimieren.\\
+Für die Daten wird jedoch kein Cache genutzt, da diese in der Regel nur ein einziges Mal betrachtet werden. Dieses Element würde somit lediglich Nichtdeterminismus- sowie langsamere Zugriffszeiten mit sich führen. 
+
 
 \subsection{Harvard/Von-Neumann Architektur}\label{2.3}
+Bei der Gestaltung eines Computersystems existieren zwei vorherrschende Lösungen - von-Neumann und Harvard. Der Unterschied hier liegt in der Art der Speicherung von Daten und Instruktionen.
+
+\subsubsection{Central Processing Unit}
+Das wichtigste Element eines Computersystems ist die CPU (central processing unit). Diese besteht aus einer Control Unit, einem Datapath sowie diversen Bussen. Die Control Unit besitzt ein Programm Counter Register und ein Instruction Register. Die hier ausgehenden Befehle werden zum einen über den Internen Bus an den Datapath weitergeleitet, und zum anderen besteht eine Verbindung zum Rest des Systems, um andere Elemente direkt ansprechen zu können.\\
+Der Datapath besteht aus einem MAR (Memory Address Register) sowie einer ALU (arithmetic-logic unit). Somit können eingehende Befehle aus der Control Unit behandelt werden. Mittels des MAR's können Daten angefordert werden, welche in der ALU verarbeitet und erneut abgespeichert werden. Dazu besteht auch hier eine Verbindung zu dem restlichen System.\\
+
+\subsubsection{Von-Neumann}
+Der Grundlegende Aufbau besteht aus einer CPU, einem Speicher und einem Systembus. 
+Der Bus setzt sich aus einem Daten- und einem Adressen-Bus zusammen, und verbindet CPU mit dem Speicher. Die Daten einer bestimmten Adresse werden von der CPU angefordert, kurz darauf von dem Speicher auf dem Datenbus bereit gestellt und von dem Datapath verarbeitet.\\
+Jedoch ist diese Architektur theoretischer Natur. Sie ist realisierbar, jedoch fehlt jede Möglichkeit der Ein- oder Ausgabe von Daten, und ist somit nicht nutzbar.\\
+Die erweiterte von-Neumann Architektur bietet eine Lösung, indem sie den Systembus zusätzlich mit einem I/O-Gerät (Input/Output) verbindet. Durch ein weiteres Kontroll-Signal wird festgelegt, ob Speicher- oder I/O angesprochen wird. 
+
+\subsubsection{Harvard}
+
+
 \subsection{Weitergehende Architektur}\label{2.4}
 \subsection{CISC/RISC}\label{2.5}
 \subsection{Scheduling}\label{2.6}
