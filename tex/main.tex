@@ -1,0 +1,62 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{ngerman}
+\usepackage[pdftex]{graphicx}
+\usepackage{ulem}
+\usepackage{amsmath}
+\usepackage[labelfont=bf]{caption}
+\usepackage[hidelinks]{hyperref}
+
+% Definitionen
+\usepackage{amsthm}
+
+% fuer Zitate
+\usepackage{cite}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\parindent0pt
+
+\title{Mikrocontroller in der Signalverarbeitung}
+\date{2018}
+\author{Stephan Kutzner}
+
+\theoremstyle{plain}
+\newtheorem{definition}{Definition}
+\newtheorem{bew}{Beweis}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\section{Einführung}
+Im folgenden wird der Einsatz von Mikroprozessoren zur Signalerfassung- und Verarbeitung behandelt. Hierzu wird in Kapitel \ref{2} der Aufbau von Mikroprozessoren erläutert. Dabei wird auf Besonderheiten eingegangen, welche für die Funktionalität von Mikroprozessoren in der Signalverarbeitung besonders tragende Rollen spielen.\\
+In dem folgenden Kapitel \ref{3} wird das Thema 'Abtastung' behandelt. Nach der Erörterung der theoretischen Grundlagen wird das Nyquist-Theorem bewiesen, um schließlich in der praktischen Anwendung betrachtet zu werden. Wichtig sind hierbei die Themen 'Input/Output' sowie 'A/D-Wandler'.\\
+Das nächste Kapitel \ref{4} befasst sich mit dem Thema 'D/A-Wandler'. Hierzu werden zunächst die Grundlagen dieses Konzeptes behandelt. Anschließend wird das Verfahren der D/A-Wandlung selber erläutert. Danach folgt ein Vergleich von Mikroprozessoren und Mikrocontrollern, welcher Grundlage für das Verständnis eines 'Digital Signal Processors (DSP)' liefert.\\
+
+\newpage
+
+\input{sections/micro}
+
+\newpage
+\section{Abstatung}\label{3}
+\newpage
+\subsection{Theorie}\label{3.1}
+\subsection{Beweis}\label{3.2}
+\subsection{Bedeutung}\label{3.3}
+\subsection{Periphere Schnittstellen}\label{3.4}
+\subsection{Analoger und digitaler In-/Output}\label{3.5}
+\newpage
+\section{DA Wandler}\label{4}
+\newpage
+\subsection{Theorie}\label{4.1}
+\subsection{Beweis}\label{4.2}
+\subsection{Bedeutung}\label{4.3}
+\subsection{Mikroprozessoren - Mikrocontroller}\label{4.4}
+\subsection{Digital Signal Processor (DSP)}\label{4.5}
+\newpage
+\bibliography{literatur}
+\bibliographystyle{plain}
+\end{document} 

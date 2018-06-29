@@ -1,0 +1,24 @@
+\contentsline {section}{\numberline {1}Einf\IeC {\"u}hrung}{2}{section.1}
+\contentsline {section}{\numberline {2}Mikroprozessoren}{3}{section.2}
+\contentsline {subsection}{\numberline {2.1}Grundlegende Begriffe}{4}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Speicher}{6}{subsection.2.2}
+\contentsline {subsubsection}{\numberline {2.2.1}Random Access Memory}{7}{subsubsection.2.2.1}
+\contentsline {subsubsection}{\numberline {2.2.2}Read-Only Memory}{7}{subsubsection.2.2.2}
+\contentsline {subsubsection}{\numberline {2.2.3}Flash}{7}{subsubsection.2.2.3}
+\contentsline {subsection}{\numberline {2.3}Harvard/Von-Neumann Architektur}{8}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Weitergehende Architektur}{8}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.5}CISC/RISC}{8}{subsection.2.5}
+\contentsline {subsection}{\numberline {2.6}Scheduling}{8}{subsection.2.6}
+\contentsline {subsection}{\numberline {2.7}System Service}{8}{subsection.2.7}
+\contentsline {section}{\numberline {3}Abstatung}{9}{section.3}
+\contentsline {subsection}{\numberline {3.1}Theorie}{10}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Beweis}{10}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Bedeutung}{10}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Periphere Schnittstellen}{10}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.5}Analoger und digitaler In-/Output}{10}{subsection.3.5}
+\contentsline {section}{\numberline {4}DA Wandler}{11}{section.4}
+\contentsline {subsection}{\numberline {4.1}Theorie}{12}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Beweis}{12}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Bedeutung}{12}{subsection.4.3}
+\contentsline {subsection}{\numberline {4.4}Mikroprozessoren - Mikrocontroller}{12}{subsection.4.4}
+\contentsline {subsection}{\numberline {4.5}Digital Signal Processor (DSP)}{12}{subsection.4.5}

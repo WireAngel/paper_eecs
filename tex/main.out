@@ -1,0 +1,24 @@
+\BOOKMARK [1][-]{section.1}{Einf\374hrung}{}% 1
+\BOOKMARK [1][-]{section.2}{Mikroprozessoren}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Grundlegende Begriffe}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Speicher}{section.2}% 4
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Random Access Memory}{subsection.2.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.2.2}{Read-Only Memory}{subsection.2.2}% 6
+\BOOKMARK [3][-]{subsubsection.2.2.3}{Flash}{subsection.2.2}% 7
+\BOOKMARK [2][-]{subsection.2.3}{Harvard/Von-Neumann Architektur}{section.2}% 8
+\BOOKMARK [2][-]{subsection.2.4}{Weitergehende Architektur}{section.2}% 9
+\BOOKMARK [2][-]{subsection.2.5}{CISC/RISC}{section.2}% 10
+\BOOKMARK [2][-]{subsection.2.6}{Scheduling}{section.2}% 11
+\BOOKMARK [2][-]{subsection.2.7}{System Service}{section.2}% 12
+\BOOKMARK [1][-]{section.3}{Abstatung}{}% 13
+\BOOKMARK [2][-]{subsection.3.1}{Theorie}{section.3}% 14
+\BOOKMARK [2][-]{subsection.3.2}{Beweis}{section.3}% 15
+\BOOKMARK [2][-]{subsection.3.3}{Bedeutung}{section.3}% 16
+\BOOKMARK [2][-]{subsection.3.4}{Periphere Schnittstellen}{section.3}% 17
+\BOOKMARK [2][-]{subsection.3.5}{Analoger und digitaler In-/Output}{section.3}% 18
+\BOOKMARK [1][-]{section.4}{DA Wandler}{}% 19
+\BOOKMARK [2][-]{subsection.4.1}{Theorie}{section.4}% 20
+\BOOKMARK [2][-]{subsection.4.2}{Beweis}{section.4}% 21
+\BOOKMARK [2][-]{subsection.4.3}{Bedeutung}{section.4}% 22
+\BOOKMARK [2][-]{subsection.4.4}{Mikroprozessoren - Mikrocontroller}{section.4}% 23
+\BOOKMARK [2][-]{subsection.4.5}{Digital Signal Processor \(DSP\)}{section.4}% 24
