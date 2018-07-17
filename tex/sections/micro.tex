@@ -102,7 +102,7 @@ Bei der Gestaltung eines Computersystems existieren zwei vorherrschende Lösunge
 
 \subsubsection{Central Processing Unit}
 Das wichtigste Element eines Computersystems ist die CPU (central processing unit). Diese besteht aus einer Control Unit, einem Datapath sowie diversen Bussen. Die Control Unit besitzt ein Programm Counter Register und ein Instruction Register. Die hier ausgehenden Befehle werden zum einen über den Internen Bus an den Datapath weitergeleitet, und zum anderen besteht eine Verbindung zum Rest des Systems, um andere Elemente direkt ansprechen zu können.\\
-Der Datapath besteht aus einem MAR (Memory Address Register) sowie einer ALU (arithmetic-logic unit). Somit können eingehende Befehle aus der Control Unit behandelt werden. Mittels des MAR's können Daten angefordert werden, welche in der ALU verarbeitet und erneut abgespeichert werden. Dazu besteht auch hier eine Verbindung zu dem restlichen System.\\
+Der Datapath besteht aus einem MAR (memory address register) sowie einer ALU (arithmetic-logic unit). Somit können eingehende Befehle aus der Control Unit behandelt werden. Mittels des MARs können Daten angefordert werden, welche in der ALU verarbeitet und erneut abgespeichert werden. Dazu besteht auch hier eine Verbindung zu dem restlichen System.\\
 
 \subsubsection{Von-Neumann}
 Der Grundlegende Aufbau besteht aus einer CPU, einem Speicher und einem Systembus. 
@@ -111,9 +111,66 @@ Jedoch ist diese Architektur theoretischer Natur. Sie ist realisierbar, jedoch f
 Die erweiterte von-Neumann Architektur bietet eine Lösung, indem sie den Systembus zusätzlich mit einem I/O-Gerät (Input/Output) verbindet. Durch ein weiteres Kontroll-Signal wird festgelegt, ob Speicher- oder I/O angesprochen wird. 
 
 \subsubsection{Harvard}
+Im Gegensatz zu der Von-Neumann Architektur besitzt die Harvard-Achitektur zwei Speicher, einen Befehls- und einen Datenspeicher. Zusätzlich existieren hier zwei Busse, von denen jeder einen Daten- und einen Adressbus beinhaltet. Somit können sowohl Befehle als auch Daten unabhängig voneinander angefordert und geladen werden. Zusätzlich können die einzelne Busse unterschiedliche Breiten haben, wodurch das System besser an den jeweiligen Anwendungsfall angepasst werden kann.\\
+Ein Nachteil ist, dass die Verwaltung von mehreren Adress-Bereichen komplexer sein kann, und somit eine weitere Herausforderung darstellt.
 
+\subsubsection{Anwendung bei einem DSP}
+Für die Realisierung eines DSPs wird in der Regel eine Harvard-Architektur verwendet. Hier können mehrere Datenspeicher und dazugehörige Busse existieren, die die Verarbeitung von einer großen Menge an Daten ermöglichen. \cite{TI_c55x} beispielsweise besitzt drei Lese- und zwei Schreib-Busse für den Datenspeicher, jedoch nur einen Adress-Bus. Zudem beträgt die Breite der Datenbusse jeweils 16 Bit, während der Befehlsbus eine Breite von 32 Bit besitzt.\\
+Der Nachteil an der Von-Neumann Architektur ist in diesem Fall, dass Daten und Befehle über den gleichen Bus übertragen werden.  Dies impliziert, dass nur eine Breite verwendet wird, in Fall von \cite{TI_c55x} also 32 Bit, was für die Daten zu viel wäre.
 
 \subsection{Weitergehende Architektur}\label{2.4}
+Zur Optimierung dieser Systeme sind eine Mehrzahl von Möglichkeiten realisiert worden. Zwar besitzt jede dieser Methoden Nachteile, jedoch überwiegen die Vorzüge bei der Anwendung in einem passenden System. Die Herausforderung hier besteht darin, ein System einzuschätzen und notwendige- sowie überflüssige Optimierungen voneinander abzugrenzen.
+
+\subsubsection{FDLES}
+Das Apronym 'FDLES' bezeichnet den Prozess eines Befehls, der von der CPU verarbeitet wird. Dieser steht für 'Fetch, Decode, Load, Execute, Store'.
+
+\begin{itemize}
+\item Fetch Instruction - Lade die Operation aus dem Befehlsspeicher
+\item Decode Instruction - Entschlüssele die Operation
+\item Load Operand - Lade die Operanden aus dem Datenspeicher
+\item Execute ALU function - Führe die Operation mithilfe der Operanden auf der ALU durch
+\item Store results - Speichere das Ergebnis unter einer gegebenen Adresse ab 
+\end{itemize}
+Bei einer simplen serielle Verarbeitung der Befehle werden für jeden Befehl fünf Zyklen benötigt. Bei einer benötigten Anzahl von $n$ Befehlen ergeben sind $5\cdot n$ Befehle, und bei einer Laufzeit von $t$ für jeden Zyklus eine Gesamtzeit von $5\cdot n\cdot t$.
+\subsubsection{Pipelines}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{images/pipeline.png}
+\captionsource{Pipelined instruction processing in a five-stage pipeline.}{\cite[p. 45]{RTS}}
+\label{pipeline}
+\end{figure}
+Der größte Nachteil an der seriellen Ausführung dieser Phasen besteht darin, dass zu jedem Zeitpunkt vier dieser fünf Elemente untätig ist. Wird beispielsweise gerade ein Befehl geladen, so sind sowohl Decoder, Datenbus als auch ALU untätig.\\
+Somit wurde der Begriff der 'Pipeline' eingeführt, um dieses Problem zu umgehen. Hierbei werden zu jedem Zeitpunkt fünf Befehle zugleich verarbeitet, was in Abb. \ref{pipeline} sichtbar ist. Damit ergäbe sich eine Laufzeit von $(n+4) \cdot t$, da nach Beginn des letzten Befehls noch vier Zyklen vergehen, um diesen zu beenden.\\
+Hier stellt sich jedoch die Frage, welcher Befehl als nächstes geladen wird. Beim seriellen Verfahren wird ein Ergebnis berechnet, gespeichert und auf dessen Grundlage der nächste Befehl gewählt. Bei einem parallelen Verfahren wird davon ausgegangen, dass die Befehle in sequentieller Form vorliegen und somit nach dem Befehl $n$ der Befehl $n+1$ benötigt wird. Solange dies zutrifft lässt sich eine Zeit von $(n+4) \cdot t$ einhalten. Wird jedoch ein 'falscher' Befehl geladen, so muss die Pipeline 'geflushed', also von allen Befehlen gereinigt werden. Dies erzeugt zusätzliche Laufzeit. Wird eine Pipeline in einem System angewendet, dessen Befehle nicht darauf angepasst worden sind und nicht in sequentieller Form vorliegen, so kann die Laufzeit die eines seriellen Systems übertreffen.\\
+Somit lässt sich konkludieren, dass sich mithilfe von Pipelines massive Performance-Verbesserungen erzielen lassen, solange das System hierfür entsprechend angepasst wird.
+
+\subsubsection{Multi-Core}
+Die Taktfrequenz eines Prozessors ist nicht beliebig erhöhbar. Bei Frequenzen im geringen Gigahertz-Bereich sorgt die entstehende Abwärme dafür, dass sich die Hardware bereits nach kurzer Zeit selber zerstören würde. Ebenfalls wird die Synchronisation der Daten in solchen Frequenzbereichen kompliziert. Um die Leistungsfähigkeit eines Prozessors weiter erhöhen zu können sind Mehrkernprozessoren eingeführt worden. Jeder dieser Kerne besitzt einen eigenen 'Instuction\& Data-Cache', welche mit einem gemeinsamen 'Internal Cache Bus' verbunden sind. Dieser wiederum ist mit einem 'Common Instruction\& Data-Cache' verbunden, welcher die Schnittstelle zu dem 'System Bus' darstellt.\\
+Theoretisch ist somit eine Vervielfachung des Durchsatzes an Aufgaben möglich, welche proportional zu der Anzahl an Kernen ist. Voraussetzung hierfür ist eine optimale Verteilung der Aufgaben auf die Kerne, sowie eine parallele Verarbeitung, Anforderung und Speicherung von Daten. Die Realisierung hiervon ist jedoch nicht trivial. Zudem führt ein Mehrkernprozessor gleichzeitig auch starken Nichtdeterminismus ein, welcher seinen Ursprung in der Verteilung der Aufgaben, Pipelines sowie den individuellen und dem gemeinsamen Cache findet. Des weiteren ist es wichtig, die Kommunikation zwischen den einzelnen Kernen zu gewährleisten, welche zuverlässig und, vor allem anderen, schnell möglich sein muss.\\
+Bei gründlicher Planung und Gestaltung eines Mehrkernprozessors können enorme Fortschritte in der 'Geschwindigkeit' eines Prozessors erzielt werden, ohne sich um Hitzeentwicklung oder Gatterlaufzeiten Gedanken zu machen. Jedoch bieten sich auch weitaus mehr Aspekte, die anfällig für Fehler sind.
+
 \subsection{CISC/RISC}\label{2.5}
+Eine weitere notwendige Entscheidung bei der Gestaltung eines Systems wird von der Art der Befehlsatzes gestellt. Es gibt zwei vorherrschende Optionen - 'Complex Instruction Set Computers' (CISC) sowie 'Reduces Instruction Set Computers' (RISC). Diese unterscheiden sich in einer Vielzahl an Aspekten, beispielsweise die Anzahl der Befehle, deren Laufzeit und die Komplexität.
+
+\subsubsection{Complex Instruction Set Computers}
+Diese Art eines Befehlssatzes bietet eine Vielzahl komplexer Befehle, deren Ziele die Minimalisierung der Laufzeit, Reduktion des Speicherverbrauchs sowie vereinfachte Handhabung sind. Erreicht wird dies durch die Implementierung von frequentiert genutzten Anweisungen.\\
+Als Beispiel diene folgender Befehl:\\
+
+MULT $\$A, \$B$\\
+\newline
+Dieser Befehl sagt aus, dass die Werte der Register $A$ und $B$ geladen, multipliziert und in dem Register $A$ gespeichert werden. Dabei bezeichnet $\$A$ das Register mit der Nummer A. Die äquivalente Form eines 'RISC' sähe wie folgt aus:\\
+\newpage
+LOAD $x$, $\$A$\\ 
+LOAD $y$, $\$B$\\
+PROD $x$, $y$\\
+STORE $\$A$, $x$\\
+\newline
+Hier werden die Register $A$ und $B$ in die Variablen $x$ und $y$ geladen, multipliziert, in der Variable $x$ zwischengespeichert und anschließend in dem Register $A$ gelagert. Es ist offensichtlich, dass die 'CISC'-Variante weitaus einfacher zu verwenden ist. Ebenfalls wird die Größe dieses Programms um 75\% reduziert, und somit werde weniger Daten von dem Hauptspeicher gelesen. Dies reduziert zusätzlich die Laufzeit des Codes.
+
+\subsubsection{Reduces Instruction Set Computers}
+Am vorangehenden Beispiel wird deutlich, dass sich 'RISC' auf elementare Befehle beschränkt. Der wohl wichtigste Aspekt ist, dass jeder Befehl genau einen Taktzyklus dauert. Durch diese einheitliche Laufzeit werden Pipelines und Parallelismus effizienter nutzbar. Der größte hierdurch entstehende Nutzen folgt daraus, dass ein Interrupt nach jedem Taktzyklus möglich ist. Ebenfalls ist somit kein Fokus auf bestimmte Befehle gelegt, sondern jede mögliche Kombination dieser elementaren Befehle ist denkbar. Ein weiterer Vorteil besteht in der reduzierten Speichernutzung dieser Befehle. Durch eine minimale Anzahl an sehr kompakten Befehlen wird nun ein Bruchteil des von einer 'CISC'-Variante genutzten Speichers benötigt.
+
+\subsubsection{Anwendung bei einem DSP}
+In der Regel wird ein 'DSP' mittels eines 'CISC' realisiert. Durch die schnelle Reaktion auf einen Interrupt sowie die geringe Anzahl an benötigten Befehlen eines 'DPS's bietet sich diese Wahl an. Die Implementierung von 'MAC'-Befehlen ist jedoch nicht optional und stellt den wichtigsten Aspekt dieses Systems dar. Der Begriff 'MAC' wird im folgenden behandelt.
 \subsection{Scheduling}\label{2.6}
 \subsection{System Service}\label{2.7}
