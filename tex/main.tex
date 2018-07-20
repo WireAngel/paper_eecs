@@ -9,6 +9,9 @@
 \usepackage{amsmath}
 \usepackage[labelfont=bf]{caption}
 \usepackage[hidelinks]{hyperref}
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithm}
+%\usepackage[onehalfspacing]{setspace}
 
 % Definitionen
 \usepackage{amsthm}
@@ -17,6 +20,10 @@
 \usepackage{cite}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
 
 \parindent0pt
 
@@ -27,6 +34,17 @@
 \theoremstyle{plain}
 \newtheorem{definition}{Definition}
 \newtheorem{bew}{Beweis}
+\newtheorem{bsp}{Beispiel}
+
+\newcommand*{\captionsource}[2]{%
+  \caption[{#1}]{%
+    #1%
+    \\\hspace{\linewidth}%
+    \textbf{Source:} #2%
+  }%
+}
+
+
 
 \begin{document}
 \maketitle

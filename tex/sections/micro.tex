@@ -67,7 +67,12 @@ Ein deterministisches System zeichnet sich dadurch aus, dass für jeden möglich
 Ist dies für ein System der Fall, so lässt sich sein gesamtes Verhalten bestimmen und jede mögliche Verletzung von Deadlines ist im Vorfeld bestimmbar.\\
 Bei einem nicht-deterministischen System besteht die Herausforderung darin, Laufzeiten realistisch abzuschätzen. Hier wird in best- und worst-case Zeiten argumentiert, also minimale- bzw. maximale Zeitspannen für die Beendigung einer Aufgabe.\\
 Wird immer die bestmögliche Zeit angenommen, so wird dies bei Nichtdeterminismus unweigerlich zu verpassten Deadlines führen. Im anderen Fall, also der konstanten Annahme von worst-case Zeiten werden Deadlines immer eingehalten werden, jedoch wird das System nicht optimal ausgenutzt. Diese Zeiten abschätzen zu können führt also zu einer Optimierung der Effizienz.\\
-Im Folgenden wird gezeigt, dass viele Optimierungsmethoden Nichtdeterminismus mit sich führen.
+Im Folgenden wird gezeigt, dass viele Optimierungsmethoden Nichtdeterminismus mit sich führen.\\
+Ein weiterer wichtiger Begriff, der am Ende des Kapitels eine tragende Rolle spielt ist der 'Interrupt'.
+\begin{definition}{Interrupt}\\
+Als Interrupt wird ein Signal bezeichnet, welche die aktuelle Aufgabe des Prozessors unterbricht, um eine mit dem Interrupt verknüpfte Aufgabe auszuführen.
+\end{definition}
+Als Beispiel für einen Interrupt kann ein externes Eingabegerät genommen werden. Wird bei einer Tastatur eine Taste gedrückt, so wird die aktuelle Aufgabe des Prozessors unterbrochen, die Eingabe entgegengenommen, verarbeitet und anschließend die zuvor behandelte Aufgabe weiter behandelt. Dabei wird der aktuelle Zustand und die Variablen der Aufgabe auf den 'Stack' gelegt, um sie anschließend in eben dieser Reihenfolge auslesen zu können. Somit muss die Aufgabe nicht von Neuem begonnen werden.
 \subsection{Speicher}\label{2.2}
 Es lassen sich verschiedene Arten von Speicher angeben. Dabei spielen nicht nur Schreib- und Lesezeiten, Kosten und die Flächennutzung eine Rolle, sondern auch Energieverbrauch und die Möglichkeit des Schreibens neuer Daten. Hierzu werden im Folgenden auf die Arten RAM, ROM sowie Flash-Speicher eingegangen. Ebenfalls wird der Unterschied zwischen dynamischem und statischem RAM deutlich gemacht.
 
@@ -171,6 +176,167 @@ Hier werden die Register $A$ und $B$ in die Variablen $x$ und $y$ geladen, multi
 Am vorangehenden Beispiel wird deutlich, dass sich 'RISC' auf elementare Befehle beschränkt. Der wohl wichtigste Aspekt ist, dass jeder Befehl genau einen Taktzyklus dauert. Durch diese einheitliche Laufzeit werden Pipelines und Parallelismus effizienter nutzbar. Der größte hierdurch entstehende Nutzen folgt daraus, dass ein Interrupt nach jedem Taktzyklus möglich ist. Ebenfalls ist somit kein Fokus auf bestimmte Befehle gelegt, sondern jede mögliche Kombination dieser elementaren Befehle ist denkbar. Ein weiterer Vorteil besteht in der reduzierten Speichernutzung dieser Befehle. Durch eine minimale Anzahl an sehr kompakten Befehlen wird nun ein Bruchteil des von einer 'CISC'-Variante genutzten Speichers benötigt.
 
 \subsubsection{Anwendung bei einem DSP}
-In der Regel wird ein 'DSP' mittels eines 'CISC' realisiert. Durch die schnelle Reaktion auf einen Interrupt sowie die geringe Anzahl an benötigten Befehlen eines 'DPS's bietet sich diese Wahl an. Die Implementierung von 'MAC'-Befehlen ist jedoch nicht optional und stellt den wichtigsten Aspekt dieses Systems dar. Der Begriff 'MAC' wird im folgenden behandelt.
+In der Regel wird ein 'DSP' mittels eines 'CISC' realisiert. Durch die schnelle Reaktion auf einen Interrupt sowie die geringe Anzahl an benötigten Befehlen eines 'DPS's bietet sich diese Wahl an. Die Implementierung von 'MAC'-Befehlen ist jedoch nicht optional und stellt den wichtigsten Aspekt dieses Systems dar. Der Begriff 'MAC' steht dabei für 'Multiplication-Accumulation' und erfordert für diese Operation genau einen Taktzyklus und ist einer der wichtigsten Befehle für die Verarbeitung von Signalen.
+
 \subsection{Scheduling}\label{2.6}
-\subsection{System Service}\label{2.7}
+Jedes nicht triviale System besitzt eine Vielzahl an möglichen Aufgaben, welche in der Regel eine Deadline besitzen. Somit stellt es eine wichtige Herausforderung dar, Aufgaben in der optimalen Reihenfolge abzuarbeiten, um nach Möglichkeit keine Deadline zu verpassen. Zunächst werden triviale Lösungen vorgestellt, und anschließend Überlegungen, welche Deadlines, verschiedene Zustände der Aufgaben sowie deren Frequenz berücksichtigen.
+
+\subsubsection{Polled Loop with Delay}
+
+\begin{algorithm}
+\captionsource{Polled Loop}{\cite[p. 83]{RTS}}
+\label{sced1}
+\begin{algorithmic}[1]
+
+\BState \textit{While(True)}\\
+\{
+\If {$flag$} \{
+\State $process\_event();$
+\State $pause(21);$
+\State $flag=0$;
+\}
+\EndIf
+\}
+
+\end{algorithmic}
+\end{algorithm}
+
+Wird ein Event in unbestimmten Zeitabständen erwartet, so kann die Polled Loop genutzt werden. Sobald das Event auftritt wird die Flag gesetzt. Dies führt innerhalb der Loop dazu, dass das Event behandelt wird und die Flag zurückgesetzt wird. Der Grund für die Pause von $21m$s besteht darin, dass gewisse Events während oder nach deren Ausführung ein unvorhersehbares Verhalten besitzen können. Kann man davon ausgehen, dass dieses Event eine minimale zeitliche Differenz zwischen den einzelnen Ausführungen hat, so kann solch eine Pause eine Robustheit des Systems gegenüber solch eines Verhaltens bieten.\\
+Allerdings ist ersichtlich, dass diese Schleife weder spezielle Features bietet, noch die Verarbeitung von mehr als einem Event unterstützt.\\
+Abhilfe für das zweite Problem würde die Einführung von verschiedenen Flags bieten, welche innerhalb der Schleife nacheinander überprüft werden und mit einem eigenen Event verknüpft sind. Dies würde bei einer Vielzahl von Events jedoch dazu führen, dass im schlimmsten Fall jede Flag überprüft wird, ehe die gesetzte Flag bemerkt wird. Der dadurch entstehende Delay kann zu Problemen führen.
+
+\subsubsection{Cyclic Code Structure}
+\begin{algorithm}
+\captionsource{Cyclid Code}{\cite[p. 84]{RTS}}
+\label{sced2}
+\begin{algorithmic}[1]
+
+\BState \textit{While(True)}\\
+\{
+\State $task\_1();$
+\State $task\_2();$
+\State ...
+\State $task\_n();$
+\State $task\_2();$
+\}
+
+\end{algorithmic}
+\end{algorithm}
+
+Für die Handhabung von Aufgaben kann, im Gegensatz zu Events ein zyklischer Ansatz verwendet werden. Deren Frequenz kann bestimmt und somit fest implementiert werden, was sie von Events unterscheidet, die in der Regel azyklisch auftreten und eine Flag setzen. Somit werden hier innerhalb eines Durchlaufs alle Aufgaben sequentiell behandelt.\\
+Um Aufgaben mit einer hohen Auftrittsfrequenz besondere Beachtung schenken zu können wird diese Aufgabe innerhalb jedes Durchlaufes mehrmals ausgeführt, im Beispiel \ref{sced2} wäre dies $task\_2$. Sobald jedoch ein schwierigeres Problem vorliegt, so sollte dieser Ansatz nicht gewählt werden. Die 'faire' Verteilung der Aufgaben innerhalb der Schleife, um alle Deadlines erfüllen zu können wird zu einer nicht trivialen Aufgabe. Zudem wird die Länge des Codes der Schleife stark ansteigen, sollten mehrere Aufgaben öfters aufgerufen werden.
+
+\subsubsection{Coroutines}
+
+\begin{algorithm}
+\captionsource{Coroutine}{\cite[p. 86]{RTS}}
+\label{sced3}
+\begin{algorithmic}[1]
+
+\BState \textit{void $task\_a$(void)}
+\{
+\BState \textit{While(True)}\\
+\{
+\State $switch(state\_a)$
+\{
+\State case 1: $phase\_a1();$
+\State $break;$
+\State case 2: $phase\_a2();$
+\State $break;$
+\State case 3: $phase\_a3();$
+\State $break;$
+\}\\
+\}\\
+\}
+\newline
+\BState \textit{void $task\_b$(void)}
+\{
+\BState \textit{While(True)}\\
+\{
+\State $switch(state\_b)$
+\{
+\State case 1: $phase\_b1();$
+\State $break;$
+\State case 2: $phase\_b2();$
+\State $break;$
+\State case 3: $phase\_b3();$
+\State $break;$
+\}\\
+\}\\
+\}
+
+
+\end{algorithmic}
+\end{algorithm}
+
+Als Koroutinen werden die in \ref{sced3} erwähnten $task\_a$ und $task\_b$ bezeichnet. Der Dispatcher ruft nacheinander die einzelnen Tasks auf, welche jeweils in Abschnitte unterteilt sind. So wird nach jeder ausgeführten Phase der zugehörige globale Zähler inkrementiert und anschließend die Kontrolle dem Dispatcher zurück gegeben. Anschließend kann die nächste Aufgabe aufgerufen werden. Bei erneutem Aufruf einer AUfgabe wird der jeweils nächste Abschnitt ausgeführt, da der Zähler nun auf einen anderen Zustand hinweist.\\
+Somit lässt sich pseudo-parallele Ausführung mehrerer Aufgaben realisieren. Durch die Unterteilung in einzelne Abschnitte sind Aufgaben zudem in der Lage, Interrupts besser behandeln zu können.
+\newpage
+\subsubsection{Interrupt-Only System}
+\begin{algorithm}
+\captionsource{Interrupt-Only}{\cite[p. 89]{RTS}}
+\label{sced4}
+\begin{algorithmic}[1]
+
+\BState \textit{void $main$(void)}
+\{
+\State $init();$
+\State $while(True);$\\
+\}\\
+
+\BState \textit{void $int\_1$(void)}
+\{
+\State $save(context);$
+\State $task\_1();$
+\State $restore(context)$;\\
+\}\\
+
+\BState \textit{void $int\_2$(void)}
+\{
+\State $save(context);$
+\State $task\_2();$
+\State $restore(context)$;\\
+\}\\
+
+\BState \textit{void $int\_3$(void)}
+\{
+\State $save(context);$
+\State $task\_3();$
+\State $restore(context)$;\\
+\}
+
+\end{algorithmic}
+\end{algorithm}
+In diesem Beispiel ruft sich das $main$-Programm mittels jump-to-self immer wieder selber auf. Aufgaben werden lediglich mittels Interrupts angekündigt. Der aktuelle Kontext wird gespeichert, die Aufgabe behandelt und der Kontext anschließend geladen. In diesem Beispiel werden alle Interrupts durch die Hardware ausgelöst.\\
+
+\subsection{Erweitertes Scheduling}\label{2.7}
+In fortgeschrittenen System werden höhere Anforderungen an die Verteilung von Aufgaben gestellt. Diese muss dynamisch und unter Berücksichtung der Frequenz, der Priorität und der Laufzeit stattfinden. Dazu wird im Folgenden zunächst die Grundlage dazu geliefert, und anschließend werden übliche Realisierungen vorgestellt.
+
+\subsubsection{Grundlegende Begriffe}
+\begin{definition}{Priorität}\\
+Die Priorrität ist eine Eigenschaft, die einer Aufgabe zugeordnet wird und in der Regel unveränderlich ist. Aufgaben können solche geringerer Priorität unterbrechen und zuerst ausgeführt werden, wenn diese initialisiert werden.
+\end{definition}
+Sollte diese Eigenschaft für ein System genutzt werden, so ist es wichtig, Prioritäten sorgsam zu wählen. Jede Unterbrechung erzeugt einen weiteren Delay, hervorgerufen durch das Speichern und Laden des aktuellen Zustandes. Zudem sorgt dies für Nichtdeterminismus.
+\begin{definition}{Zeitfenster}\\
+Ein Zeitfenster ist ein einer Aufgabe zugeordnete Zeitspanne, in welcher diese ausgeführt wird.
+\end{definition}
+Wird solch ein Zeitfenster genutzt, die Aufgabe jedoch nicht in der vorgegebenen Zeitspanne beendet, so wird die Aufgabe unterbrochen, der aktuelle Inhalt der Variablen gespeichert und bei erneuter Ausführung aufgerufen.\\
+Viele Systeme sind so erstellt, dass die Zeitfenster nur ein Bruchteil der eigentlichen Laufzeit ausmachen. Somit wird eine Aufgabe mehrmals unterbrochen, ehe diese fertig ist. Somit kann zu jedem Zeitpunkt schnell auf Interrupts reagiert werden, da einige Systeme die Unterbrechung von einer Aufgabe nicht zulassen, sondern die mit der Unterbrechung verknüpfte Aufgabe erst nach dem aktuell Zeitfenster ausführen.
+\begin{definition}{TCB}\\
+Ein TCB('Task Control Block') ist eine Datenstruktur, welche einer Aufgabe zugewiesen wird. In dieser werden unter anderem Priorität, Status, zugeordnere Register, Programmzähler sowie ein Pointer auf den nächsten TCB gespeichert.
+\end{definition}
+TCBs eignen sich bei einem System, deren Aufgaben mit Eingabevariablen, Programmcountern sowie Interrupts einhergehen. So können Ergebnisse zwischengespeichert werden, und Interrupts können sofort ohne Verluste behandelt werden.
+
+
+\begin{definition}{Zustand}\\
+Der Zustand einer Aufgabe gibt an, ob diese gerade oder zukünftig ausgeführt wird, oder ob deren Ausführung bereits ansteht. Dabei gibt es die Zustände 'Bereit', 'Wird ausgeführt', 'Unterbrochen' sowie 'Inaktiv'.
+\end{definition}
+Eine Aufgabe mit dem Zustand 'Bereit' steht für möglichst baldige Ausführung an. Dies setzt voraus, dass alle Bedingungen für die Ausführung erfüllt sind.\\
+Befindet sich eine Aufgabe in dem Zustand 'Wird ausgeführt', so ist dies die aktuelle Aufgabe des Prozessors. Eine Aufgabe kann diesen Zustand nur erreichen, wenn sie zuvor 'Bereit' war, oder wenn sie gerade angelegt worden ist und keine andere Aufgabe behandelt wird.\\
+Nach erfolgreicher Ausführung wandert eine Aufgabe in den Zustand 'Unterbrochen'. Sie wird erst wieder durch einen entsprechenden Befehl auf den Zustand 'Bereit' gesetzt.\\
+Wird eine Aufgabe jedoch während der Ausführung unterbrochen, da ihre maximale Laufzeit erreicht ist, so wird der Zustand erneut auf 'Bereit' gesetzt, und die aktuellen Variablen werden gespeichert, um mit der Ausführung fortfahren zu können.\\
+Der verbleibende Zustand 'inaktiv' wird nur dann genutzt, wenn die Anzahl an TCBs festgesetzt ist. Diese Aufgaben existieren, können jedoch aktuell nicht ausgeführt werden.
+
+\begin{definition}{}
+\end{definition}
+\subsection{System Service}\label{2.8}
