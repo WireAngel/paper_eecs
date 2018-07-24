@@ -337,6 +337,30 @@ Nach erfolgreicher Ausführung wandert eine Aufgabe in den Zustand 'Unterbrochen
 Wird eine Aufgabe jedoch während der Ausführung unterbrochen, da ihre maximale Laufzeit erreicht ist, so wird der Zustand erneut auf 'Bereit' gesetzt, und die aktuellen Variablen werden gespeichert, um mit der Ausführung fortfahren zu können.\\
 Der verbleibende Zustand 'inaktiv' wird nur dann genutzt, wenn die Anzahl an TCBs festgesetzt ist. Diese Aufgaben existieren, können jedoch aktuell nicht ausgeführt werden.
 
+\subsubsection{Round-Robin Scheduling}
+Round-Robin Scheduling bietet die einfachste Form eines Systems, welches mehrere in Segmente unterteilte Aufgaben behandelt. Dies geschieht, indem ein Zeitfenster $t_\delta$ bestimmt wird. Dieses wird in einem zyklischen Verfahren jeder Aufgabe zugeordnet, welche in diesem Zeitfenster behandelt wird. Nach Ablauf der Zeit oder Beendigung der Aufgabe wird diese in den Hintergrund geschoben, um die nächste Aufgabe abzuarbeiten. So kann das System zu jedem Zeitpunkt nach spätestens $t_\delta$ unterbrochen werden, was zu einer guten Reaktionszeit für Interrupts führt.\\
+Zu einer verbesserten Handhabung lassen sich auch hier Prioritäten bestimmten, sodass eine Aufgabe höherer Priorität zu jedem beliebigen Zeitpunkt eintreten und alle Tasks unterliegender Priorität unterbrechen kann, während deren jeweiliges Zeitfenster weiter abläuft. Dies führt wiederum zu einer komplizierteren Wartung. Beispielsweise ist es möglich, dass eine Aufgabe hoher Priorität immer die Aufgabe $n_i$ unterbricht, so dass diese niemals behandelt wird.
+
+\subsubsection{Cyclic Code Scheduling}
+Ein Verfahren ähnlich dem Round-Robin Scheduling ist Cyclic Code Scheduling. Hier wird ein Zeitfenster $t_\delta$ bestimmt, welcher ähnlich des Round-Robin Verfahrens abwechselnd allen AUfgaben zugeteilt wird. Hier gelten jedoch einschränkungen an dieses Zeitfenster.
+\begin{itemize}
+\item $t_\delta \geq max (e_i)$
+\item $\lfloor p_{hyper} / t_\delta\rfloor - p_{hyper} / t_\delta = 0$
+\item $2 t_\delta - gcd(p_i, t_\delta) \leq D_i$
+\end{itemize}
+wobei
+\begin{itemize}
+\item $p_i$ die minimale Zeit zwischen zwei Beendigungen der Aufgabe $n_i$ ist
+\item $e_i$ die Ausführungszeit der Aufgabe $n_i$ ist
+\item $D_i$ die maximale Zeit zwischen Aktivierung und Beendigung der Aufgabe $n_i$ ist.
+\item $p_{hyper}$ das kleinste gemeinsame Vielfache aller $p_i$ ist
+\item $gcd(a,b)$ den kleinsten gemeinsamen Teiler von a und b darstellen.
+\end{itemize}
+Dabei ist der größte Unterschied zu Round-Robin neben diesen Bedingungen die Tatsache, dass Aufgaben nicht von solchen höherer Priorität unterbrochen werden können. Die Zeitfenster sind im Vorfeld so angepasst, dass alle Aufgaben ihre Deadline (in der Regel relativ knapp) einhalten können, somit sind Änderungen nach dem Beginn eines Zyklus nicht möglich.\\
+Deswegen wird der genaue Ablauf zu Beginn jedes Zyklus neu berechnet, um aperiodisch auftretende Aufgaben berücksichtigen zu können.
+
+\subsubsection{Fixed - Priority Scheduling: Rate - Monotonic Approach}
+
 \begin{definition}{}
 \end{definition}
 \subsection{System Service}\label{2.8}
