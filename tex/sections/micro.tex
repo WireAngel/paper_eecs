@@ -342,7 +342,8 @@ Round-Robin Scheduling bietet die einfachste Form eines Systems, welches mehrere
 Zu einer verbesserten Handhabung lassen sich auch hier Prioritäten bestimmten, sodass eine Aufgabe höherer Priorität zu jedem beliebigen Zeitpunkt eintreten und alle Tasks unterliegender Priorität unterbrechen kann, während deren jeweiliges Zeitfenster weiter abläuft. Dies führt wiederum zu einer komplizierteren Wartung. Beispielsweise ist es möglich, dass eine Aufgabe hoher Priorität immer die Aufgabe $n_i$ unterbricht, so dass diese niemals behandelt wird.
 
 \subsubsection{Cyclic Code Scheduling}
-Ein Verfahren ähnlich dem Round-Robin Scheduling ist Cyclic Code Scheduling. Hier wird ein Zeitfenster $t_\delta$ bestimmt, welcher ähnlich des Round-Robin Verfahrens abwechselnd allen AUfgaben zugeteilt wird. Hier gelten jedoch einschränkungen an dieses Zeitfenster.
+\label{2.7.3}
+Ein Verfahren ähnlich dem Round-Robin Scheduling ist Cyclic Code Scheduling. Hier wird ein Zeitfenster $t_\delta$ bestimmt, welcher ähnlich des Round-Robin Verfahrens abwechselnd allen Aufgaben zugeteilt wird. Hier gelten jedoch einschränkungen an dieses Zeitfenster.
 \begin{itemize}
 \item $t_\delta \geq max (e_i)$
 \item $\lfloor p_{hyper} / t_\delta\rfloor - p_{hyper} / t_\delta = 0$
@@ -359,8 +360,27 @@ wobei
 Dabei ist der größte Unterschied zu Round-Robin neben diesen Bedingungen die Tatsache, dass Aufgaben nicht von solchen höherer Priorität unterbrochen werden können. Die Zeitfenster sind im Vorfeld so angepasst, dass alle Aufgaben ihre Deadline (in der Regel relativ knapp) einhalten können, somit sind Änderungen nach dem Beginn eines Zyklus nicht möglich.\\
 Deswegen wird der genaue Ablauf zu Beginn jedes Zyklus neu berechnet, um aperiodisch auftretende Aufgaben berücksichtigen zu können.
 
-\subsubsection{Fixed - Priority Scheduling: Rate - Monotonic Approach}
-
-\begin{definition}{}
+\subsubsection{Fixed-Priority Scheduling: Rate-Monotonic Approach}
+\label{2.7.5}
+Bei diesem Ansatz wird jeder Aufgabe eine Priorität entsprechend ihrer Periode $p_i$ zugeteilt. Dabei ist zu beachten, dass Aufgaben niedrigerer Periodendauer eine höhere Priorität erhalten. Wie in \cite[p. 102f]{RTS} bewiesen, resultiert dieser Ansatz in der optimalen Verteilung der Aufgaben. Ebenfalls wird eine obere Grenze des 'utilization factors' in Abhängigkeit der ANzahl an Aufgaben gezeigt.\\
+\begin{definition}{Utilization factor}\\
+Der 'Utilization factor' (U) ergibt sich über die Summe der Quotienten der Laufzeit und Periodendauer der einzelnen Tasks, also:\\
+$U = \sum\limits_{i=1}^n \frac{e_i}{p_i}$\\
 \end{definition}
-\subsection{System Service}\label{2.8}
+Dabei gibt dieser Wert $U$ einen Prozentsatz der Zeit an, welcher von Aufgaben genutzt wird. Dabei enntspräche $U=0.87$ einer Auslastung der CPU von 87\% bei optimaler Aufteilung der Aufgaben.\\
+Für dieses Verfahren existiert die Grenze $n(2^{1/n} - 1)$. Liegt der Wert $U$ für $n$ periodische Aufgaben über diesem Wert, so ist nicht garantiert, dass Fixed-Priority Scheduling eine Lösung bietet, bei der keine Deadlines verletzt werden. Unterhalb dieser Grenze jedoch funktioniert das Verfahren in jedem Fall.
+
+\subsubsection{Dynamic Priority Scheduling: Earliest Deadline First Approach}
+Wie der Name suggeriert, so wird hier zu jedem Zeitpunkt die Aufgabe behandelt, deren Deadline unmittelbar bevorsteht. Wird eine Aufgabe aktiviert, so wird geprüft, ob deren Deadline vor der der aktuellen Aufgabe liegt. Ist dies der Fall, so wird die aktuelle Aufgabe unterbrochen und stattdessen die neue behandelt.\\
+Dieses Schedulingverfahren wird zu Laufzeit des Systems ausgeführt, nicht zu Kompilierzeit, was bei den anderen vorgestellten Verfahren der Fall war.\\
+Dank dieser Verteilung der Aufgaben ist es möglich, ein System mit einem Wert von $U \leq 1$ zu realisieren und zu verhindern, dass Deadlines verpasst werden. Hier liegt der größte Vorteil gegenüber dem in \ref{2.7.5} erläuterten Verfahren.\\
+Der Nachteil liegt in der Dynamik, mit der die Aufgaben behandelt werden. Fixed-Priority Scheduling ist berechenbar, da die Priorität der Aufgaben statisch und abhängig von deren Periodendauer ist. Somit wird mit einem dynamischen System Nichtdeterminismus eingeführt. Zudem ist ein statisches Verfahren robuster gegenüber verpassten Deadlines. Wird bei dem in diesem Kapitel eingeführten Verfahren eine Deadlines verpasst, so führt dies in der Regel zu weiteren verpassten Deadlines und schließlich zu einem Ausfall des Systems. Bei dem Verfahren in \ref{2.7.5} würde diese Aufgabe ihre Deadline in einem periodischen Zyklus verpassen, die restlichen Aufgaben würden jedoch weiterhin rechtzeitig ausgeführt werden können.
+
+\subsubsection{Anwendung bei einem DSP}
+Bei einem 'digital signal processor' sind in der Regel sowohl Aufgaben sowie deren Ausführungs- und Periodendauer bekannt. Somit lässt sich solch ein System mithilfe eines statischen Scheduling Verfahrens realisieren, wodurch overhead sowie nicht-determinismus in diesem Teil eliminiert werden\cite{Scheduling}. Die Unterbrechung anderer Aufgaben ist in einem DSP in der Regel nicht möglich, wodurch sich beispielsweise das in \ref{2.7.3} vorgestellte Verfahren anbietet.
+
+
+
+%\begin{definition}{}
+%\end{definition}
+%\subsection{System Service}\label{2.8}
