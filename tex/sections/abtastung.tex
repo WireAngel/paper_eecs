@@ -4,44 +4,96 @@ Wird ein Vorgang zu (in der Regel) äquidistanten Zeitpunkten gemessen, so bezei
 Für jegliche Verarbeitung mithilfe eines DSPs, zur Übertragung mittels beispielsweise des 'Digital Audio Broadcastings' oder zur Minimierung des Speicherverbrauchs ist die Digitalisierung ein notwendiger Schritt in der Signalverarbeitung. 
 
 \subsubsection{Analoge/Digitale Definitions- und Wertebereiche}
-\begin{figure}
-\centering
-\includegraphics[scale=0.4]{images/signals.png}
-\captionsource{Übersicht diskreter und kontinuierlicher Signale}{\cite[p. 2]{frey2008signal}}
-\label{signals}
-\end{figure}
+%\begin{figure}
+%\centering
+%\includegraphics[scale=0.4]{images/signals.png}
+%\captionsource{Übersicht diskreter und kontinuierlicher Signale}{\cite[p. 2]{frey2008signal}}
+%\label{signals}
+%\end{figure}
 Grundlegend existieren vier Formen, in denen ein Signal vorliegen kann. Dies wird in \ref{signals} dargestellt. Sowohl im zeit- als auch im Wertebereich können Datenpunkte in diskreter- sowie kontinuierlicher Form vorliegen. Geht man von einer rein kontinuierlicher Form der natürlich existierenden Werte aus, beispielsweise akustische Signale oder auch Temperatur, so besitzen all diese Signale eine zeit- als auch wertkontinuierliche Form.\\
 Es existieren Ansätze in der Physik, nach welchen Zeit oder auch Distanz ein rein diskretes Konstrukt beschreiben, da diese eine beliebig kleine, jedoch konstante minimale Einheit besitzen. Auf diese Fragestellung wird hier jedoch nicht eingegangen, und somit wird angenommen, dass ein kontinuierlicher Zeitbereich existieren kann.\\
 \newpage
 
 \subsubsection{Ideale Abtastung}
 \begin{definition}{Abtastrate}\\
-Wird ein Signal im gleichmäßigem Abstand T erfasst, so beschreibt $\frac{1}{T}$ die Abtastfrequenz. Der n-te Wert liegt bei $t = n \cdot T$ vor.
+Wird ein Signal im gleichmäßigem Abstand $T_A$ erfasst, so beschreibt $f_A = \frac{1}{T_A}$ die Abtastfrequenz. Der n-te Wert liegt bei $t = n \cdot T_A$ vor.
 \end{definition}
 
 Bei der idealen Abtastung wird ein Dirac-Kamm, also eine Folge von Dirac-Stößen $\delta(t)$ genutzt. Liegt nun ein Signal $s(t)$ vor, so ergibt sich das abgetastete Signal wie folgt:\\
-$s_a(t) = s(t) \cdot \sum\limits_{n=-\infty}^{\infty} \delta(t - nT)$\\
+$$s_a(t) = s(t) \cdot \sum_{n=-\infty}^{\infty} \delta(t - nT_A)$$\\
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=1]{images/abtastung_ideal.png}
+\captionsource{Reale Abtastung eines Signals}{\cite{ideal_abtastung}}
+\label{ideal_abtastung}
+\end{figure}
+
+
 Dies ist jedoch lediglich ein mathematisches Konstrukt, und in der Anwendung kann dieses nicht genutzt werden. Im Folgenden wird die reale Abtastung behandelt.
 
 \subsubsection{Reale Abtastung}
-In der Realität existieren keine idealen Dirac-Stöße, da diese unendlich steile Flanken besitzen würden. Stattdessen 
+In der Realität existieren keine idealen Dirac-Stöße, da diese unendlich steile Flanken besitzen würden. Anstelle des Dirac-Kamms wird eine periodische Folge von Rechteckimpulsen gewählt. Hierbei muss darauf geachtet werden, dass deren Fläche genau wie der eines Dirac-Impulses 1 beträgt. Für eine Breite von $T_W$ eines Rechtecks ergibt sich die Höhe $\frac{1}{T_W}$.\\
 
+Diese Fensterfunktion wird wie folgt beschrieben:\\
+$$w(t) = \frac{1}{T_W} \cdot rect(t)$$\\
+Genau wie der Dirac-Impuls besitzt auch die Rechteckfunktion zwei unendlich steile Flanken, die dessen optimale Implementierung unmöglich machen. Jedoch sind hier steigende- und fallende Flanke durch die Dauer $T_W$ getrennt. Zudem ist eine Flankendauer $T_F$  um einiges irrelevanter, da diese hier nur einen Bruchteil der Funktion ausmacht ($\frac{T_F}{T_W + T_F}$). \\
+\newline
+Zu einem beliebigen Zeitpunkt $n \cdot T_A$ ergibt sich der Abtastwert:\\
+$$s_{AW}(n \cdot T_A) = \int_{-\infty}^{\infty} s(t) \cdot w(t - n \cdot T_A)dt = s(t) * w(t)|_{t = n \cdot T_A}$$ \\
+Dabei stellt $*$ den Faltungsoperator dar.
 
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=1]{images/abtastung_real.png}
+\captionsource{Reale Abtastung eines Signals mit $T_A = 0.5\cdot T_W$}{\cite{real_abtastung}}
+\label{real_abtastung}
+\end{figure}
 
-Die Diskretisierung im Zeitbereich wird realisiert, indem eine Größe in beliebigen, jedoch äquidistanten Zeitintervallen $T$ erfasst wird. Das Inverse dieser Intervalle wird als 'Abtastrate' bezeichnet, also $\frac{1}{T}$.\\
+Innerhalb der Zeit $T_W$ wird das eingehende Signal erfasst und integriert, um so einen Wert zu bestimmen. Anschließend wird dieser Wert als konstant angenommen, bis die nächste Periode beginnt. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{images/sah_signal.png}
+\captionsource{Abtastung eines Signals. Die vertikalen, gestrichelten Linien stellen den kaum sichtbaren Zeitraum $T_W$ dar.}{\cite{sah_signal}}
+\label{sah_signal}
+\end{figure}
+
+\subsubsection{Nyquist-Shannon-Abtasttheorem}
+Im Jahr 1948 formulierte Claude E. Shannon ein Theorem, welches einer abzutastenden Funktion $s(t)$ eine minimale Abtastfrequenz $f_A$ zuordnet.\\
+Ist das Signal $s(t)$ bandbegrenzt und besitzt eine maximale Frequent $f_{max}$, so muss die Abtastfrequenz $f_A \geq 2 \cdot f_{max}$ betragen. Ein Beweis folgt in \ref{3.2}.\\
+Wird eine geringere Abtastfrequenz gewählt, so kann dies zu Aliasing führen. Somit wird es unmöglich, das originale Signal aus den vorliegenden Informationen zu rekonstruieren, und es liegt Informationsverlust vor.\\
+Wählt man eine höhere Frequenz, so gewinnt man keine zusätzlichen Informationen. Allerdings wird das Verfahren robuster, da die von dem Theorem beschriebene minimale Abtastfrequenz nur in einem idealen System zutrifft. In einem realen System existieren beispielsweise keine idealen Filter, da keine unendlich steilen Flanken realisierbar sind. Dadurch würde eine Abtastfrequenz von $f_A = 2 \cdot f_{max}$ ebenfalls zu Aliasing führen.\\
+Aus diesem Grund existiert in der Praxis folgender Richtwert:\\
+$$f_A \geq 2.2 \cdot f_{max}$$
+
 
 \subsubsection{Quantisierung}
-Im Wertebereich wird dieses Verfahren als 'Quantisierung' bezeichnet. Dies ist zunächst keine Form der Abtastung, ist jedoch eng mit dieser verwandt und wird somit kurz beschrieben.\\
-
+Im Wertebereich wird das Verfahren der Diskretisierung als 'Quantisierung' bezeichnet. Dies ist zunächst keine Form der Abtastung, ist jedoch eng mit dieser verwandt und wird somit kurz beschrieben.\\
 
 Zunächst wird eine Auflösung $\delta$ gewählt, welche die Ordinate in äquidistante 'Stufen' einteilt. Jeder gemessene Wert wird zur Speicherung einer dieser Stufen zugeordnet, wobei in der Regel die Stufe mit dem geringsten Abstand zu dem Wert gewählt wird. Ein gemessener Wert $x$ wird mithilfe der im Folgenden beschriebenen Funktion einer Stufe zugeordnet.\\
-$Q(x) = sgn(x) \cdot \delta \cdot \Big\lfloor \cfrac{|x|}{\delta} + \cfrac{1}{2} \Big\rfloor $\\
+$$Q(x) = sgn(x) \cdot \delta \cdot \Big\lfloor \cfrac{|x|}{\delta} + \cfrac{1}{2} \Big\rfloor $$\\
 Hierbei beschreibt $sgn$ die Signum Funktion.\\
 Für einen Wertebereich der Größe $l$ ergeben sich $N = \cfrac{l}{\delta}$ Stufen, welcher ein gemessener Wert zugeordnet werden kann. Es ist offensichtlich, dass mit einer genaueren (kleineren) Auflösung eine höhere Genauigkeit erzielt werden kann. Hierzu muss jedoch eine höhere Datenrate in Kauf genommen werten.
 
 
+\subsection{Mathematische Hintergründe}\label{3.2}
+Im Folgenden werden Herleitungen und Beweise zu den in \ref{3.1} erwähnten Theoremen aufgeführt.
 
-\subsection{Beweis}\label{3.2}
+\subsubsection{Ideale Abtastung}
+Gegeben sei das abgetastete Signal\\
+$$s_a(t) = s(t) \cdot \sum_{n=-\infty}^{\infty} \delta(t - nT_A)$$\\
+$\mathcal{F}$ bezeichne im Folgenden die Fouriertransformation eines Signals. Es ergibt sich:\\
+\begin{equation}
+\begin{aligned}
+\mathcal{F}(s_a(t)) = &  \mathcal{F}(s(t) \cdot \sum\limits_{n=-\infty}^{\infty} \delta(t - nT_A)) \\
+= & \mathcal{F}(s(t)) \cdot \mathcal{F}(\sum\limits_{n=-\infty}^{\infty} \delta(t - nT_A))) \\
+= & S(f) * \left[ \frac{1}{T_A} \sum_{n = -\infty} ^ {\infty} \delta \left( f - \frac{n}{T} \right) \right] \\
+= & \frac{1}{T_A} \sum_{n = -\infty} ^ {\infty} S\left( f - \frac{n}{T} \right)
+\end{aligned}
+\end{equation}
+
+
 \subsection{Bedeutung}\label{3.3}
 
 Nach der Abtastung eines Signals liegt dies zwangsweise in diskreter Form vor, sowohl im zeit- als auch im Wertebereich. Dies hat mehrere Ursachen. Zum einen existieren keine Messinstrumente, welche eine beliebige Größe beliebig genau messen können. So existieren beispielsweise High-End Sensoren, welche Temperaturen mit einer Auflösung von $\pm0.125^\circ C$ messen können und einer Genauigkeit von $\pm0.1^\circ C$ erfassen können. Es ist absehbar, dass diese Werte in Zukunft verbessert werden können, also Temperaturen genauer und mit einer geringeren Unsicherheit erfasst werden können. Jedoch zeigt sich auch, dass der praktischen Messung Grenzen gesetzt sind.\\
