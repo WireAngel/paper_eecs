@@ -1,4 +1,4 @@
-\section{Abstatung}\label{3}
+\section{Abtastung}\label{3}
 Wird ein Vorgang zu (in der Regel) äquidistanten Zeitpunkten gemessen, so bezeichnet sich dies als Abtastung. Dies ist ein fundamentaler und in der Regel der erste Schritt für die Verarbeitung eines Signals. Im Folgenden werden zunächst die Grundlagen und die Theorie der Abtastung erörtert. Anschließend werden die wichtigsten Eigenschaften aufgezählt und bewiesen. In Abschnitt \ref{3.3} wird auf die Bedeutung dieser Eigenschaften im Kontext eines DSPs eingegangen. Zuletzt wird die Realisierung der Abtastung am Beispiel eines DSPs beschrieben, wobei Fokus auf die Problematiken und Lösungen gelegt wird.
 \subsection{Theorie}\label{3.1}
 Für jegliche Verarbeitung mithilfe eines DSPs, zur Übertragung mittels beispielsweise des 'Digital Audio Broadcastings' oder zur Minimierung des Speicherverbrauchs ist die Digitalisierung ein notwendiger Schritt in der Signalverarbeitung. 
@@ -33,14 +33,21 @@ $$s_a(t) = s(t) \cdot \sum_{n=-\infty}^{\infty} \delta(t - nT_A)$$\\
 Dies ist jedoch lediglich ein mathematisches Konstrukt, und in der Anwendung kann dieses nicht genutzt werden. Im Folgenden wird die reale Abtastung behandelt.
 
 \subsubsection{Reale Abtastung}
-In der Realität existieren keine idealen Dirac-Stöße, da diese unendlich steile Flanken besitzen würden. Anstelle des Dirac-Kamms wird eine periodische Folge von Rechteckimpulsen gewählt. Hierbei muss darauf geachtet werden, dass deren Fläche genau wie der eines Dirac-Impulses 1 beträgt. Für eine Breite von $T_W$ eines Rechtecks ergibt sich die Höhe $\frac{1}{T_W}$.\\
+In der Realität existieren keine idealen Dirac-Stöße, da diese unendlich steile Flanken besitzen würden. Anstelle des Dirac-Kamms wird eine periodische Folge von Rechteckimpulsen gewählt. Diese wird wie folgt beschrieben:\\
+\begin{equation}
+   rect(t) =
+   \begin{cases}
+     0 & ,|t| > \frac{1}{2}\\
+     \frac{1}{2} & ,|t| = \frac{1}{2}\\
+     1 & ,|t| < \frac{1}{2}\\
+   \end{cases}
+\end{equation}
 
-Diese Fensterfunktion wird wie folgt beschrieben:\\
-$$w(t) = \frac{1}{T_W} \cdot rect(t)$$\\
-Genau wie der Dirac-Impuls besitzt auch die Rechteckfunktion zwei unendlich steile Flanken, die dessen optimale Implementierung unmöglich machen. Jedoch sind hier steigende- und fallende Flanke durch die Dauer $T_W$ getrennt. Zudem ist eine Flankendauer $T_F$  um einiges irrelevanter, da diese hier nur einen Bruchteil der Funktion ausmacht ($\frac{T_F}{T_W + T_F}$). \\
+Genau wie der Dirac-Impuls besitzt auch die Rechteckfunktion zwei unendlich steile Flanken, die dessen optimale Implementierung unmöglich machen. Jedoch sind hier steigende- und fallende Flanke durch die Dauer $T_W$ getrennt. Dies entspricht der Breite des Rechtecks. Zudem ist eine Flankendauer $T_F$  um einiges irrelevanter, da diese hier nur einen Bruchteil der Funktion ausmacht ($\frac{T_F}{T_W + T_F}$). \\
 \newline
-Zu einem beliebigen Zeitpunkt $n \cdot T_A$ ergibt sich der Abtastwert:\\
-$$s_{AW}(n \cdot T_A) = \int_{-\infty}^{\infty} s(t) \cdot w(t - n \cdot T_A)dt = s(t) * w(t)|_{t = n \cdot T_A}$$ \\
+Zu einem beliebigen Zeitpunkt $t$ ergibt sich der Abtastwert:\\
+$$s_{AW}(t) = \sum_{n=-\infty}^{\infty} s(n\cdot T_A) \cdot rect\left( \frac{t - n \cdot T_A}{T_W}\right) dt 
+= rect\left(\frac{t}{T_W}\right) * \sum_{n=-\infty}^{\infty} s(t) \delta (t - n\cdot T_A)$$ \\
 Dabei stellt $*$ den Faltungsoperator dar.
 
 \begin{figure}[h!]
@@ -61,7 +68,7 @@ Innerhalb der Zeit $T_W$ wird das eingehende Signal erfasst und integriert, um s
 
 \subsubsection{Nyquist-Shannon-Abtasttheorem}
 Im Jahr 1948 formulierte Claude E. Shannon ein Theorem, welches einer abzutastenden Funktion $s(t)$ eine minimale Abtastfrequenz $f_A$ zuordnet.\\
-Ist das Signal $s(t)$ bandbegrenzt und besitzt eine maximale Frequent $f_{max}$, so muss die Abtastfrequenz $f_A \geq 2 \cdot f_{max}$ betragen. Ein Beweis folgt in \ref{3.2}.\\
+Ist das Signal $s(t)$ bandbegrenzt und besitzt eine maximale Frequenz $f_{max}$, so muss die Abtastfrequenz $f_A \geq 2 \cdot f_{max}$ betragen. Ein Beweis folgt in \ref{3.2}.\\
 Wird eine geringere Abtastfrequenz gewählt, so kann dies zu Aliasing führen. Somit wird es unmöglich, das originale Signal aus den vorliegenden Informationen zu rekonstruieren, und es liegt Informationsverlust vor.\\
 Wählt man eine höhere Frequenz, so gewinnt man keine zusätzlichen Informationen. Allerdings wird das Verfahren robuster, da die von dem Theorem beschriebene minimale Abtastfrequenz nur in einem idealen System zutrifft. In einem realen System existieren beispielsweise keine idealen Filter, da keine unendlich steilen Flanken realisierbar sind. Dadurch würde eine Abtastfrequenz von $f_A = 2 \cdot f_{max}$ ebenfalls zu Aliasing führen.\\
 Aus diesem Grund existiert in der Praxis folgender Richtwert:\\
@@ -89,10 +96,67 @@ $\mathcal{F}$ bezeichne im Folgenden die Fouriertransformation eines Signals. Es
 \mathcal{F}(s_a(t)) = &  \mathcal{F}(s(t) \cdot \sum\limits_{n=-\infty}^{\infty} \delta(t - nT_A)) \\
 = & \mathcal{F}(s(t)) \cdot \mathcal{F}(\sum\limits_{n=-\infty}^{\infty} \delta(t - nT_A))) \\
 = & S(f) * \left[ \frac{1}{T_A} \sum_{n = -\infty} ^ {\infty} \delta \left( f - \frac{n}{T} \right) \right] \\
-= & \frac{1}{T_A} \sum_{n = -\infty} ^ {\infty} S\left( f - \frac{n}{T} \right)
+= & \frac{1}{T_A} \sum_{n = -\infty} ^ {\infty} S\left( f - \frac{n}{T_A} \right)
 \end{aligned}
 \end{equation}
 
+
+
+Es ergibt sich eine periodische Folge des Spektrums von $s(t)$ in einem Abstand von $T_A$. Ist $s(t)$ von einer Frequenz $f_{max}$ bandbegrenzt, wobei $$2f_{max} = f_A $$ 
+so ergibt sich für das Signal $s(t)$ mit dem Spektrum
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{images/fmax.png}
+\caption{Spektrum des Signals mit maximaler Frequenz $f_{max}$}
+\label{fmax}
+\end{figure}
+
+nach dem Abtasten folgendes Spektrum:
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.3]{images/2f.png}
+\caption{Spektrum des mit $2f_{max}$ abgetasteten Signals.}
+\label{2fsig}
+\end{figure}
+\newpage
+
+Es ist offensichtlich, dass sich die periodischen Frequenzbänder an der Stelle $n \cdot f_A$ berühren, und ein einzelnes Band an dieser Stelle somit nicht eindeutig rekonstruiert werden kann. Wird eine geringere Abtastfrequenz gewählt, so überschneiden sich die Frequenzbänder, und das so genannte 'Aliasing' betrifft größere Bereiche des Signals. Aliasing ist irreversibel und sollte somit vermieden werden.
+
+\subsubsection{Reale Abtastung}
+
+Gegeben sei das abgetastete Signal\\
+$$s_{AW}(t) = rect\left(\frac{t}{T_W}\right) * \sum_{n=-\infty}^{\infty} s(t) \delta (t - n\cdot T_A)$$\\
+Die Fouriertransformation ergibt das folgende Spektrum:\\
+\begin{equation}
+\begin{aligned}
+\mathcal{F}(s_{AW}(t)) = &  \mathcal{F}(rect\left(\frac{t}{T_W}\right) * \sum_{n=-\infty}^{\infty} s(t) \delta (t - n\cdot T_A)) \\
+= & \mathcal{F}(rect\left(\frac{t}{T_W}\right)) \cdot \mathcal{F}(\sum_{n=-\infty}^{\infty} s(t) \delta (t - n\cdot T_A)) \\
+= & T_W \cdot si(\pi f T_W) \cdot \left[ S(F) * \frac{1}{T_A} 
+\sum_{n=-\infty}^{\infty} \delta \left(f - \frac{n}{T_A}\right) \right] \\
+\end{aligned}
+\end{equation}
+
+Dabei beschreibt $$si(t) = \frac{sin(t)}{(t)}$$
+
+Vergleicht man dieses Ergebnis mit dem Spektrum der idealen Abtastung, so ergibt sich:
+$$S_{AW}(f) = T_W \cdot si(\pi f T_W) \cdot S_{a}(f)$$
+
+Dies entspricht dem idealen Spektrum, allerdings durch die eine si-Funktion verzerrt. Dies ist in der Rekonstruktion behandelbar und somit im Gegensatz zu Aliasing reversibel.\\
+
+\subsection{Implementierung}
+Von zentraler Bedeutung ist die praktische Realisierung einer Abtastschaltung.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.6]{images/abtastung_schaltung.png}
+\captionsource{Schematische Anordnung eines Abtast-Halte-Gliedes}{\cite{sah_schaltung}}
+\label{sah_schaltung}
+\end{figure}
+
+Zunächst wird das eingehende Signal auf einen Impedanzwandler gegeben, welcher die Impedanz der Quelle der des Verbrauchers anpasst. Dies verhindert eine zu hohe Belastung der Spannungsquelle, wodurch gegebenenfalls Ungenauigkeiten in der Messung auftreten können.\\
+Die Rückkopplung des Impedanzwandlers ist durch einen Schalter mit einem Kondensator parallel zu einem Spannnungsfolger verbunden. Wird dieser geschlossen, so lädt sich während des Zeitfensters $T_W$ der Kondensator mit der eingehenden Spannung auf. Währenddessen ist es möglich, dass sich die Spannung verändert. Anschließend wird der Schalter wieder geöffnet, und somit ist die auf der rechten Seite der Schaltung anliegende Spannung konstant, da diese durch den Kondensator gespeichert wird. Der Spannungsfolger wird eingebaut, um die Spannung möglichst lange zu halten, damit der ausgehende Wert als konstant angenommen werden kann. 
 
 \subsection{Bedeutung}\label{3.3}
 
