@@ -145,24 +145,48 @@ $$S_{AW}(f) = T_W \cdot si(\pi f T_W) \cdot S_{a}(f)$$
 
 Dies entspricht dem idealen Spektrum, allerdings durch die eine si-Funktion verzerrt. Dies ist in der Rekonstruktion behandelbar und somit im Gegensatz zu Aliasing reversibel.\\
 
-\subsection{Implementierung}
-Von zentraler Bedeutung ist die praktische Realisierung einer Abtastschaltung.
+\subsection{Implementierung eines ADU}
+Von zentraler Bedeutung ist die praktische Realisierung einer Abtastschaltung. Neben der Abtastung müssen die Daten jedoch in der Regel in eine digitale Form konvertiert werden, um diese mithilfe eines Computersystems verarbeiten zu können. Der Analog-Digital-Umsetzer (ADU) realisiert diese Konvertierung und kann in vielen Varianten implementiert werden.\\
+Im Folgenden wird eine Schaltung vorgestellt, welche aus Abtastung mithilfe einer Abtast-Halte-Schaltung sowie eines Single-Slope-Umsetzers besteht.
+\subsubsection{Abtastung}
+\label{3.3.1}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[scale=0.6]{images/abtastung_schaltung.png}
+\includegraphics[scale=0.8]{images/abtastung_schaltung.png}
 \captionsource{Schematische Anordnung eines Abtast-Halte-Gliedes}{\cite{sah_schaltung}}
 \label{sah_schaltung}
 \end{figure}
 
 Zunächst wird das eingehende Signal auf einen Impedanzwandler gegeben, welcher die Impedanz der Quelle der des Verbrauchers anpasst. Dies verhindert eine zu hohe Belastung der Spannungsquelle, wodurch gegebenenfalls Ungenauigkeiten in der Messung auftreten können.\\
-Die Rückkopplung des Impedanzwandlers ist durch einen Schalter mit einem Kondensator parallel zu einem Spannnungsfolger verbunden. Wird dieser geschlossen, so lädt sich während des Zeitfensters $T_W$ der Kondensator mit der eingehenden Spannung auf. Währenddessen ist es möglich, dass sich die Spannung verändert. Anschließend wird der Schalter wieder geöffnet, und somit ist die auf der rechten Seite der Schaltung anliegende Spannung konstant, da diese durch den Kondensator gespeichert wird. Der Spannungsfolger wird eingebaut, um die Spannung möglichst lange zu halten, damit der ausgehende Wert als konstant angenommen werden kann. 
+Die Rückkopplung des Impedanzwandlers ist durch einen Schalter mit einem Kondensator parallel zu einem Spannnungsfolger verbunden. Wird dieser geschlossen, so lädt sich während des Zeitfensters $T_W$ der Kondensator mit der eingehenden Spannung auf. Währenddessen ist es möglich, dass sich die Spannung verändert. Anschließend wird der Schalter wieder geöffnet, und somit ist die auf der rechten Seite der Schaltung anliegende Spannung konstant, da diese durch den Kondensator gespeichert wird. Der Spannungsfolger wird eingebaut, um die Spannung möglichst lange zu halten, damit der ausgehende Wert als konstant angenommen werden kann.\\
+
+Der gesamte ADU könnte auch ohne diese Schaltung implementiert werden. Im Folgenden wird jedoch erläutert, weshalb sie für nicht konstante Eingangsspannungen sehr anfällig ist, weswegen die	Wandlung eines zeitkontinuierlichen- in ein zeitdiskretes Signal eingebunden wird.
+
+\subsubsection{Single-Slope-Umsetzer}
+
+Nach erfolgreicher Abtastung liegt ein Signal in zeitdiskreter Form vor. Der zugehörige Wert für jedes Zeitfenster $T_W$ kann als annähernd konstant angenommen werden, sofern die Fensterbreite nicht zu groß ist und der Spannungsfolger die Spannung nahezu verlustlos halten kann. Anschließend folgt die Übersetzung in ein digitales Signal. Hierfür existieren eine Vielzahl an Verfahren, wobei im Folgenden ein vergleichsweise Einfaches vorgestellt wird, um den Vorgang zu verdeutlichen.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.4]{images/singleslope.png}
+\captionsource{Schematische Anordnung eines Single-Slope-Umsetzers}{\cite{singleslope_schaltung}}
+\label{singleslope_schaltung}
+\end{figure}
+
+\ref{singleslope_schaltung} zeigt den Aufbau solch einer Schaltung. Zunächst wird eine Sägezahnspannung erstellt, welche mittels zwei Komparatoren mit der Eingangsspannung- sowie des Massepotentials verglichen wird. Der Vergleich mit dem M	assepotential dient dazu, dass das Signal nur während einer Flanke der Sägezahnspannung gemessen wird. Solange diese Spannung größer als die 'konstante' Eingangsspannung ist, schaltet das erste (linke) \&-Gatter. Währenddessen erstellt der Quarzoszillator ein periodisches Rechtecksignal, dessen Periode nur einen Bruchteil der Steigungsdauer der Sägezahnspannung entspricht. Bei jeder Periode schaltet das zweite \&-Gatter, und der Zähler bekommt einen Impuls. Sobald die Sägezahnspannung gleich der Eingangsspannung ist, wird der Zähler nicht mehr inkrementiert. Jeder Flanke des Oszillators wird eine Spannung $dU$ zugeordnet, mit 
+$$dU = max(U_r) \cdot \frac{f_{Oszi}}{f_r}$$\\
+wobei $f_{Oszi}$ die Frequenz des Oszillators, $f_r$ die Frequenz der Sägezahnspannung und $U_r$ den maximalen Wert der Sägezahnspannung beschreibt.\\
+Wurden am Zähler $n$ Flanken gezählt, so liegt die Spannung $n \cdot dU$ in digitaler Form am Ausgang des Zählers vor. Dabei ist offensichtlich, dass diese Spannung nur einen Wert $k \cdot dU, k \in R$ annehmen kann. Wird die Anzahl an Ausgabebits des 	Zählers erhöht, so können eingehende Flanken in höherer Frequenz verarbeitet werden, da die 'Auflösung' des Zählers gestiegen ist.\\
+Weiterhin muss beachtet werden, dass eine höhere Abtastfrequenz eine im gleichen Maße höhere Frequenz des Oszillators- und des Sägezahngenerators erfordert. Wird die Frequenz des Oszillators nicht angepasst, so sinkt die Auflösung des Zählers, da auf eine Periode der Sägezahnspannung nun weniger Messperioden folgen.\\
+
+Dieses Verfahren bietet eine vergleichsweise einfache, dafür jedoch sehr limitierte Lösung. Neben der maximslen Taktfrequenz des Oszillators, welche bei hoher Auflösung leicht erreicht wird schränkt auch die Instabilität gegenüber nicht konstanten Eingangsspannungen das System ein. In Verbindung mit des in \ref{3.3.1} vorgestellten Abtast-Halte-Glieds ist dieser Aufbau für Grundlegende Problemstellungen jedoch ausreichend.
 
 \subsection{Bedeutung}\label{3.3}
 
 Nach der Abtastung eines Signals liegt dies zwangsweise in diskreter Form vor, sowohl im zeit- als auch im Wertebereich. Dies hat mehrere Ursachen. Zum einen existieren keine Messinstrumente, welche eine beliebige Größe beliebig genau messen können. So existieren beispielsweise High-End Sensoren, welche Temperaturen mit einer Auflösung von $\pm0.125^\circ C$ messen können und einer Genauigkeit von $\pm0.1^\circ C$ erfassen können. Es ist absehbar, dass diese Werte in Zukunft verbessert werden können, also Temperaturen genauer und mit einer geringeren Unsicherheit erfasst werden können. Jedoch zeigt sich auch, dass der praktischen Messung Grenzen gesetzt sind.\\
 Die andere Problematik entspringt aus Speicherung gemessener Daten. Man nehme an, es existiere ein Messinstrument, welches beispielsweise Spannung beliebig genau messen könnte, und dies in beliebigen Zeitabständen. Wird nun eine Spannung gemessen und mit einer Genauigkeit von 15 Dezimalstellen gemessen, und dies geschieht mit einer Frequenz von $1M$Hz, so fallen $1 \cdot 10^6 \cdot 64$ bit $= 64 \cdot 10^6$ bit $= 8M$B an Informationen die Sekunde an. Dies wird auch als Datenrate bezeichnet.\\
-Es ist offensichtlich, dass es somit nicht möglich ist, beliebig genau und häufig gemessene Daten zu speichern. Deshalb werden Daten diskretisiert.\\
+In dem Fall mit einer beliebig großen Genauigkeit - sowie Frequenz ist dieser Datenrate keine Grenze gesetzt. Neben der offensichtlichen Problematik der Speicherung wird auch die Übertragung der Daten von ADU zu Prozessor und Speichereinheit ein bedenklicher Aspekt, welcher eben diese Datenrate limitiert.
 
 \subsection{Periphere Schnittstellen}\label{3.4}
 \subsection{Analoger und digitaler In-/Output}\label{3.5}
