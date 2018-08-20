@@ -11,7 +11,9 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage[noend]{algpseudocode}
 \usepackage{algorithm}
-%\usepackage[onehalfspacing]{setspace}
+\usepackage[onehalfspacing]{setspace}
+\usepackage{pdfpages}
+
 
 % Definitionen
 \usepackage{amsthm}
@@ -47,33 +49,22 @@
 
 
 \begin{document}
-\maketitle
+%\maketitle
+\includepdf{sections/first.pdf}
 \tableofcontents
+\newpage
 \section{Einführung}
-Im folgenden wird der Einsatz von Mikroprozessoren zur Signalerfassung- und Verarbeitung behandelt. Hierzu wird in Kapitel \ref{2} der Aufbau von Mikroprozessoren erläutert. Dabei wird auf Besonderheiten eingegangen, welche für die Funktionalität von Mikroprozessoren in der Signalverarbeitung besonders tragende Rollen spielen.\\
-In dem folgenden Kapitel \ref{3} wird das Thema 'Abtastung' behandelt. Nach der Erörterung der theoretischen Grundlagen wird das Nyquist-Theorem bewiesen, um schließlich in der praktischen Anwendung betrachtet zu werden. Wichtig sind hierbei die Themen 'Input/Output' sowie 'A/D-Wandler'.\\
-Das nächste Kapitel \ref{4} befasst sich mit dem Thema 'D/A-Wandler'. Hierzu werden zunächst die Grundlagen dieses Konzeptes behandelt. Anschließend wird das Verfahren der D/A-Wandlung selber erläutert. Danach folgt ein Vergleich von Mikroprozessoren und Mikrocontrollern, welcher Grundlage für das Verständnis eines 'Digital Signal Processors (DSP)' liefert.\\
+Im Folgenden wird der Einsatz von Mikroprozessoren zur Erfassung, Verarbeitung sowie Ausgabe von Signalen behandelt.
+
+Hierzu wird in Kapitel [\ref{2}] der Aufbau von Mikroprozessoren erläutert. Dabei wird auf Besonderheiten eingegangen, welche für die Funktionalität von Mikroprozessoren in der Signalverarbeitung tragende Rollen spielen.\\
+In dem folgenden Kapitel [\ref{3}] wird das Thema 'Abtastung' behandelt. Nach der Erörterung der theoretischen Grundlagen wird das Nyquist-Theorem bewiesen, um schließlich in der praktischen Anwendung betrachtet zu werden. Wichtig sind hierbei die Themen 'Mathematische Hintergründe' sowie 'A/D-Wandler'.\\
+Das abschließende Kapitel [\ref{4}] befasst sich mit dem Thema 'D/A-Wandler'. Hierzu werden zunächst die Grundlagen dieses Konzeptes behandelt. Anschließend wird das Verfahren der D/A-Wandlung selber erläutert. Zuletzt folgt ein Vergleich verschiedener Implementationsmöglichkeiten.\\
 
 \newpage
 
 \input{sections/micro}
 \input{sections/abtastung}
-\newpage
-
-\newpage
-\subsection{Theorie}\label{3.1}
-\subsection{Beweis}\label{3.2}
-\subsection{Bedeutung}\label{3.3}
-\subsection{Periphere Schnittstellen}\label{3.4}
-\subsection{Analoger und digitaler In-/Output}\label{3.5}
-\newpage
-\section{DA Wandler}\label{4}
-\newpage
-\subsection{Theorie}\label{4.1}
-\subsection{Beweis}\label{4.2}
-\subsection{Bedeutung}\label{4.3}
-\subsection{Mikroprozessoren - Mikrocontroller}\label{4.4}
-\subsection{Digital Signal Processor (DSP)}\label{4.5}
+\input{sections/da}
 \newpage
 \bibliography{literatur}
 \bibliographystyle{plain}

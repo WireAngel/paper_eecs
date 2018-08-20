@@ -1,12 +1,13 @@
-\section{Mikroprozessoren}\label{2}
+	\section{Mikroprozessoren}\label{2}
 
-Für das Verständnis eines DSPs ist das Verständnis der zu Grunde liegenden Hardware unumgänglich. Hierzu wird zunächst in Kapitel \ref{2.1} der Begriff 'Echtzeit' erklärt. In der praktischen Anwendung ist die Signalverarbeitung ein Echtzeit-Problem, weswegen dieser Begriff eine wichtige Grundlage bildet. Des weiteren führt dieses Kapitel noch andere ebenfalls wichtige Begriffe ein, beispielsweise 'harte Echtzeit' oder auch 'Deadlines'.\\
-Kapitel \ref{2.2} befasst sich mit der Bauweise von Speicherelementen. Dazu zählen 'Random-Access-Memory' (RAM), 'Read-Only-Memory' (ROM), 'Flash'-Speicher (EEPROM) sowie Caches. Insbesondere wird auf Vor- und Nachteile dieser Optionen eingegangen.\\
-Bestandteile des Kapitels \ref{2.3} sind verschiedene Architekturen, wobei Harvard sowie Von-Neumann eine tragende Rolle spielen.
-Im Folgenden befasst sich Kapitel \ref{2.4} mit weitergehender Architektur, welche entscheidende Vorteile für die Verarbeitung von Signalen bietet. Hierzu zählen Pipelines und Multicore Architekturen.\\
-Für die Verarbeitung von Daten sind grundlegende Befehle notwendig. In welcher Form und in welchem Umfang diese elementaren Befehle vorliegen wird in Kapitel \ref{2.5} betrachtet. Besondere Aufmerksamkeit wird der praktischen Anwendung in der Signalverarbeitung gewidmet.\\
-Kapitel \ref{2.6} behandelt das Thema 'Scheduling', also der zeitliche Ablauf verschiedener Prozesse. Hierbei werden Verfahren wie 'Round-Robin', 'First-Come-First-Serve' sowie 'Earliest Deadline First' analysiert.\\
-Schließlich werden weitere Optionen wie 'Mailboxes' sowie Gefahren, beispielsweise 'Deadlocks' in Kapitel \ref{2.7} aufgezählt. Besonders wird auf Themen eingegangen, die einen Mikroprozessor in der Signalverarbeitung stören könnten.\\
+Für das Verständnis eines DSPs ist das Verständnis der zu Grunde liegenden Hardware unumgänglich. Hierzu wird zunächst in Kapitel [\ref{2.1}] der Begriff 'Echtzeit' erklärt. In der praktischen Anwendung ist die Signalverarbeitung ein Echtzeit-Problem, weswegen dieser Begriff eine wichtige Grundlage bildet. Des weiteren führt dieses Kapitel noch andere ebenfalls wichtige Begriffe ein, beispielsweise 'harte Echtzeit' oder auch 'Deadlines'.\\
+Kapitel [\ref{2.2}] befasst sich mit der Bauweise von Speicherelementen. Dazu zählen 'Random-Access-Memory' (RAM), 'Read-Only-Memory' (ROM), 'Flash'-Speicher (EEPROM) sowie Caches. Insbesondere wird auf Vor- und Nachteile dieser Optionen eingegangen.\\
+Bestandteile des Kapitels [\ref{2.3}] sind verschiedene Architekturen, wobei Harvard sowie Von-Neumann eine tragende Rolle spielen.
+Im Folgenden befasst sich Kapitel [\ref{2.4}] mit weitergehender Architektur, welche entscheidende Vorteile für die Verarbeitung von Signalen bietet. Hierzu zählen Pipelines und Multicore Architekturen.\\
+Für die Verarbeitung von Daten sind grundlegende Befehle notwendig. In welcher Form und in welchem Umfang diese elementaren Befehle vorliegen, wird in Kapitel [\ref{2.5}] betrachtet. Besondere Aufmerksamkeit wird der praktischen Anwendung in der Signalverarbeitung gewidmet.\\
+Kapitel [\ref{2.6}] behandelt die Grundlagen des Themas 'Scheduling', wobei neben den dafür relevanten Grundlagen simple Algorithmen präsentiert werden.
+Schließlich behandelt [\ref{2.7}] das Thema 'Erweitertes Scheduling', wobei Verfahren wie 'Round-Robin', 'First-Come-First-Serve' sowie 'Earliest Deadline First' analysiert werden.\\
+
 \newpage
 
 \subsection{Grundlegende Begriffe}\label{2.1}
@@ -36,11 +37,11 @@ Als Deadline wird eine einer Aufgabe zugeordneter Zeitspanne bezeichnet, welche 
 Es ist offensichtlich, dass nicht alle denkbaren Systeme in Echtzeit agieren müssen. Bei vielen Anwendungen ist diese Bedingung jedoch unumgänglich, wie auch bei der Signalverarbeitung. Sollte die Verarbeitung einer Zeitreihe länger als die Dauer der Zeitreihe benötigen, so kann dies nicht als Echtzeitsystem bezeichnet werden.\\
 
 \begin{bew}{Deadline}\\
-Sei $t_i$ die Dauer einer Zeitreihe $i$. Entsprend sei $p_i = t_i + d_i$ die Verarbeitungszeit der Zeitreihe, bestehend aus der Länge sowie einem Delay $d_i$.\\
+Sei $t_i$ die Länge einer Zeitreihe $i$. Entsprend sei $p_i = t_i + d_i$ die Verarbeitungszeit der Zeitreihe, bestehend aus der Länge sowie einem Delay $d_i$.\\
 Sei $t_l$ eine fixe Zeit, die die maximal zugelassene Verzögerung einer Zeitreihe angibt, also die Deadline.\\
 Werden nun mehrere Eingaben nacheinander berechnet, so summiert sich der Delay auf:\\
 $d = \sum_{i=1}^N d_i$\\
-Angenommen, der Delay sei konstant. So wird nach $\frac{t_l}{d_i}$ Eingaben der Delay die Deadline überschreiten. Dies gilt für jede endliche Deadline.
+Angenommen, der Delay sei für jede Zeitreihe identisch. So wird nach $\frac{t_l}{d_i}$ Eingaben der Delay die Deadline überschreiten. Dies gilt für jede endliche Deadline.
 \end{bew}
 Jedoch muss die Deadline nicht der Länge der Zeitreihe entsprechen. Hört man Musik, so möchte man nicht, dass die Ausgabe Sekunden nach dem eigentlichen Abspielen erfolgt, sondern ohne merkliche Verzögerung. Auch von der Eingabe mittels einer Tastatur bis zur Visualisierung des Zeichens auf dem Bildschirm sollte nicht mehr als wenige Zehntel einer Sekunde vergehen.
 
@@ -52,15 +53,15 @@ Im Gegensatz hierzu stehen die harten Echtzeitsysteme:\\
 \begin{definition}{Harte Echtzeit}\\
 Ein hartes Echtzeitsystem zeichnet sich dadurch aus, dass bereits eine verpasste Deadline zu einem kompletten Systemversagen führen kann.
 \end{definition}
-Das wohl beste Beispiel ist die Vorstellung, dass Sensoren die Leistung eines Atomkraftwerkes überwachen sollen. Steht nun eine Überlastung bevor, so muss das System binnen weniger Augenblicke reagieren - sollte diese Deadline nicht eingehalten werden, so kann dies eine Katastrophe zur Folge haben.\\
+Das wohl beste Beispiel ist die Vorstellung, dass Sensoren die Leistung eines Atomkraftwerkes überwachen sollen. Steht nun eine Überlastung bevor, so muss das System innerhalb einer extrem kurzen Zeit reagieren - sollte diese Deadline nicht eingehalten werden, so kann dies eine Katastrophe zur Folge haben.\\
 Auf der anderen Seite steht der Geldautomat, dessen verpasste Deadlines auch in großer Zahl weder Systemversagen- noch Katastrophen mit sich führen, jedoch massive Performanceverluste bedeuten.\\
 \begin{definition}{Feste Echtzeit}\\
 Ein festes Echtzeitsystem zeichnet sich dadurch aus, dass wenige verpasste Deadlines lediglich die Performance beeinträchtigen, eine größere Zahl jedoch zu Systemversagen führen könnte.
 \end{definition}
 Es existiert keine eindeutige Bestimmungsvorschrift für die Art eines Systems. Die Grenzen sind nicht fest definiert und so kann ein System je nach Betrachter als 'fest' oder 'hart' bezeichnet werden.\\
-Jedoch ist diese dritte Klasse sinnig, um nicht nur zwischen einem sehr robusten System und einem,
+Jedoch ist diese dritte Klasse sinnig, um nicht nur zwischen einem sehr robusten System und Einem,
 dessen Deadlines um jeden Preis eingehalten werden müssen unterscheiden zu können.\\
-Ein weiterer wichtiger Begriff, welcher vor allem zur Abschätzung der Zuverlässigkeit eines Systems sowie des Verhaltens von bestimmten Aufgaben genutzt wird lautet 'Determinismus'.\\
+Ein weiterer wichtiger Begriff, welcher vor allem zur Abschätzung der Zuverlässigkeit eines Systems sowie des Verhaltens von bestimmten Aufgaben genutzt wird, lautet 'Determinismus'.\\
 \begin{definition}{Deterministisches System}\\
 Ein deterministisches System zeichnet sich dadurch aus, dass für jeden möglichen Zustand und jeden möglichen Eingabevektor der Folgezustand sowie Ausgaben bestimmt werden können.
 \end{definition}
@@ -68,24 +69,24 @@ Ist dies für ein System der Fall, so lässt sich sein gesamtes Verhalten bestim
 Bei einem nicht-deterministischen System besteht die Herausforderung darin, Laufzeiten realistisch abzuschätzen. Hier wird in best- und worst-case Zeiten argumentiert, also minimale- bzw. maximale Zeitspannen für die Beendigung einer Aufgabe.\\
 Wird immer die bestmögliche Zeit angenommen, so wird dies bei Nichtdeterminismus unweigerlich zu verpassten Deadlines führen. Im anderen Fall, also der konstanten Annahme von worst-case Zeiten werden Deadlines immer eingehalten werden, jedoch wird das System nicht optimal ausgenutzt. Diese Zeiten abschätzen zu können führt also zu einer Optimierung der Effizienz.\\
 Im Folgenden wird gezeigt, dass viele Optimierungsmethoden Nichtdeterminismus mit sich führen.\\
-Ein weiterer wichtiger Begriff, der am Ende des Kapitels eine tragende Rolle spielt ist der 'Interrupt'.
+Ein weiterer wichtiger Begriff, der am Ende des Kapitels eine tragende Rolle spielt, ist der 'Interrupt'.
 \begin{definition}{Interrupt}\\
 Als Interrupt wird ein Signal bezeichnet, welche die aktuelle Aufgabe des Prozessors unterbricht, um eine mit dem Interrupt verknüpfte Aufgabe auszuführen.
 \end{definition}
 Als Beispiel für einen Interrupt kann ein externes Eingabegerät genommen werden. Wird bei einer Tastatur eine Taste gedrückt, so wird die aktuelle Aufgabe des Prozessors unterbrochen, die Eingabe entgegengenommen, verarbeitet und anschließend die zuvor behandelte Aufgabe weiter behandelt. Dabei wird der aktuelle Zustand und die Variablen der Aufgabe auf den 'Stack' gelegt, um sie anschließend in eben dieser Reihenfolge auslesen zu können. Somit muss die Aufgabe nicht von Neuem begonnen werden.
 \subsection{Speicher}\label{2.2}
-Es lassen sich verschiedene Arten von Speicher angeben. Dabei spielen nicht nur Schreib- und Lesezeiten, Kosten und die Flächennutzung eine Rolle, sondern auch Energieverbrauch und die Möglichkeit des Schreibens neuer Daten. Hierzu werden im Folgenden auf die Arten RAM, ROM sowie Flash-Speicher eingegangen. Ebenfalls wird der Unterschied zwischen dynamischem und statischem RAM deutlich gemacht.
+Es lassen sich verschiedene Arten von Speicher angeben. Dabei spielen nicht nur Schreib- und Lesezeiten, Kosten und die Flächennutzung eine Rolle, sondern auch Energieverbrauch und die Möglichkeit des Schreibens neuer Daten. Hierzu werden im Folgenden auf die Arten RAM, ROM sowie Flash-Speicher und Caches eingegangen. Ebenfalls wird der Unterschied zwischen dynamischem und statischem RAM deutlich gemacht.
 
 \subsubsection{Random Access Memory}
-Unter Random Access Memory (RAM) versteht man eine unbeständige Art der Datenspeicherung. Diese Art von Speicher lässt sich in der Regel beliebig oft neu beschreiben, löschen und auslesen. All diese Vorgänge sind schneller als bei anderen Arten von Speicher, weshalb jede Form eines modernen Rechners eine Form von RAM besitzt, meist in der Regel eines Caches, der im folgenden noch beschrieben wird.\\
+Unter Random Access Memory (RAM) versteht man eine unbeständige Art der Datenspeicherung. Diese Art von Speicher lässt sich in der Regel beliebig oft neu beschreiben, löschen und auslesen. All diese Vorgänge sind schneller als bei anderen Arten von Speicher, weshalb jede Form eines modernen Rechners eine Form von RAM besitzt, meist in der Regel eines Caches, der im Folgenden noch beschrieben wird.\\
 Durch die unbeständige Art der Datenspeicherung eignet sich RAM-Speicher jedoch nicht für persistente Speicherung. Sobald die Stromversorgung unterbrochen wird, werden die Speicherzellen geleert und die Daten somit verworfen.
 
 \subsubsection{Read-Only Memory}
 Im Gegensatz dazu steht Read-Only Memory, auch ROM. Wie der Name bereits andeutet, eignet sich dieser nicht zur Änderung der gespeicherten Daten. Es ist möglich, den Speicher zu leeren und zu beschreiben, jedoch ist die maximale Anzahl dieser Vorgänge limitiert und um einiges langsamer als beim RAM. Dies ist jedoch nicht bei jeder Form von ROM möglich. Mask ROM beispielsweile lässt sich nur bei der Herstellung beschreiben. Ebenso ist das Auslesen der Daten langsamer.\\
-Die Speicherung ist persistenter Natur, weswegen ROM in der Regel fest verdrahtet Firmware für ein Gerät bereit stellt, welche nicht alternierbar ist. Ein weiterer Vorteil ist der weitaus geringere Preis.
+Die Speicherung ist persistenter Natur, weswegen ROM in der Regel fest verdrahtet Firmware für ein Gerät bereit stellt, welche nicht alternierbar ist. Ein weiterer Vorteil ist der im Vergleich zu RAM geringe Preis.
 
 \subsubsection{Flash}
-Flash-Speicher, auch Flash-EEPROM (Electrically Erasable Programmable Read-only Memory) ist eine erweiterte Form des normalen ROMs. Im Gegensatz zu EEPROM können einzelne Bytes nicht überschrieben werden.\\
+Flash-Speicher, auch Flash-EEPROM (Electrically Erasable Programmable Read-only Memory) ist eine erweiterte Form des normalen ROMs. Im Gegensatz zu EEPROM können einzelne Bytes nicht überschrieben werden, dies findet lediglich in zusammenhängenden Blöcken von Bytes statt.\\
 Dank der Natur des ROM-Speichers sind Daten jedoch persistent gespeichert. Ebenso ist der Energieverbrauch verhältnismäßig gering, und die Kosten sind ebenfalls minimal. Somit bietet der Flash-Speicher eine robuste, kosteneffiziente Lösung für eingebettete Systeme.
 
 \subsubsection{Cache}
@@ -116,7 +117,7 @@ Jedoch ist diese Architektur theoretischer Natur. Sie ist realisierbar, jedoch f
 Die erweiterte von-Neumann Architektur bietet eine Lösung, indem sie den Systembus zusätzlich mit einem I/O-Gerät (Input/Output) verbindet. Durch ein weiteres Kontroll-Signal wird festgelegt, ob Speicher- oder I/O angesprochen wird. 
 
 \subsubsection{Harvard}
-Im Gegensatz zu der Von-Neumann Architektur besitzt die Harvard-Achitektur zwei Speicher, einen Befehls- und einen Datenspeicher. Zusätzlich existieren hier zwei Busse, von denen jeder einen Daten- und einen Adressbus beinhaltet. Somit können sowohl Befehle als auch Daten unabhängig voneinander angefordert und geladen werden. Zusätzlich können die einzelne Busse unterschiedliche Breiten haben, wodurch das System besser an den jeweiligen Anwendungsfall angepasst werden kann.\\
+Im Gegensatz zu der Von-Neumann Architektur besitzt die Harvard-Achitektur zwei Speicher, einen Befehls- und einen Datenspeicher. Zusätzlich existieren hier zwei Busse, von denen jeder einen Daten- und einen Adressbus beinhaltet. Somit können sowohl Befehle als auch Daten unabhängig voneinander angefordert und geladen werden. Außerdem können die einzelne Busse unterschiedliche Breiten haben, wodurch das System besser an den jeweiligen Anwendungsfall angepasst werden kann.\\
 Ein Nachteil ist, dass die Verwaltung von mehreren Adress-Bereichen komplexer sein kann, und somit eine weitere Herausforderung darstellt.
 
 \subsubsection{Anwendung bei einem DSP}
@@ -127,7 +128,7 @@ Der Nachteil an der Von-Neumann Architektur ist in diesem Fall, dass Daten und B
 Zur Optimierung dieser Systeme sind eine Mehrzahl von Möglichkeiten realisiert worden. Zwar besitzt jede dieser Methoden Nachteile, jedoch überwiegen die Vorzüge bei der Anwendung in einem passenden System. Die Herausforderung hier besteht darin, ein System einzuschätzen und notwendige- sowie überflüssige Optimierungen voneinander abzugrenzen.
 
 \subsubsection{FDLES}
-Das Apronym 'FDLES' bezeichnet den Prozess eines Befehls, der von der CPU verarbeitet wird. Dieser steht für 'Fetch, Decode, Load, Execute, Store'.
+Das Akronym 'FDLES' bezeichnet den Prozess eines Befehls, der von der CPU verarbeitet wird. Dieser steht für 'Fetch, Decode, Load, Execute, Store'.
 
 \begin{itemize}
 \item Fetch Instruction - Lade die Operation aus dem Befehlsspeicher
@@ -141,21 +142,21 @@ Bei einer simplen serielle Verarbeitung der Befehle werden für jeden Befehl fü
 \begin{figure}
 \centering
 \includegraphics[scale=0.5]{images/pipeline.png}
-\captionsource{Pipelined instruction processing in a five-stage pipeline.}{\cite[p. 45]{RTS}}
+\captionsource{Schritte einer fünfstufigen Pipeline.}{\cite[p. 45]{RTS}}
 \label{pipeline}
 \end{figure}
 Der größte Nachteil an der seriellen Ausführung dieser Phasen besteht darin, dass zu jedem Zeitpunkt vier dieser fünf Elemente untätig ist. Wird beispielsweise gerade ein Befehl geladen, so sind sowohl Decoder, Datenbus als auch ALU untätig.\\
-Somit wurde der Begriff der 'Pipeline' eingeführt, um dieses Problem zu umgehen. Hierbei werden zu jedem Zeitpunkt fünf Befehle zugleich verarbeitet, was in Abb. \ref{pipeline} sichtbar ist. Damit ergäbe sich eine Laufzeit von $(n+4) \cdot t$, da nach Beginn des letzten Befehls noch vier Zyklen vergehen, um diesen zu beenden.\\
-Hier stellt sich jedoch die Frage, welcher Befehl als nächstes geladen wird. Beim seriellen Verfahren wird ein Ergebnis berechnet, gespeichert und auf dessen Grundlage der nächste Befehl gewählt. Bei einem parallelen Verfahren wird davon ausgegangen, dass die Befehle in sequentieller Form vorliegen und somit nach dem Befehl $n$ der Befehl $n+1$ benötigt wird. Solange dies zutrifft lässt sich eine Zeit von $(n+4) \cdot t$ einhalten. Wird jedoch ein 'falscher' Befehl geladen, so muss die Pipeline 'geflushed', also von allen Befehlen gereinigt werden. Dies erzeugt zusätzliche Laufzeit. Wird eine Pipeline in einem System angewendet, dessen Befehle nicht darauf angepasst worden sind und nicht in sequentieller Form vorliegen, so kann die Laufzeit die eines seriellen Systems übertreffen.\\
+Somit wurde die Idee der 'Pipeline' eingeführt, um dieses Problem zu umgehen. Hierbei werden zu jedem Zeitpunkt fünf Befehle zugleich verarbeitet, was in [\ref{pipeline}] sichtbar ist. Damit ergäbe sich eine Laufzeit von $(n+4) \cdot t$, da nach Beginn des letzten Befehls noch vier Zyklen vergehen, um diesen zu beenden.\\
+Hier stellt sich jedoch die Frage, welcher Befehl als nächstes geladen wird. Beim seriellen Verfahren wird ein Ergebnis berechnet, gespeichert und auf dessen Grundlage der nächste Befehl gewählt. Bei einem parallelen Verfahren wird davon ausgegangen, dass die Befehle in sequentieller Form vorliegen und somit nach dem Befehl $n$ der Befehl $n+1$ benötigt wird. Solange dies zutrifft, lässt sich eine Zeit von $(n+4) \cdot t$ einhalten. Wird jedoch ein 'falscher' Befehl geladen, so muss die Pipeline 'geflushed', also von allen Befehlen gereinigt werden. Dies erzeugt zusätzliche Laufzeit. Wird eine Pipeline in einem System angewendet, dessen Befehle nicht darauf angepasst worden sind und nicht in sequentieller Form vorliegen, so kann die Laufzeit die eines seriellen Systems übertreffen.\\
 Somit lässt sich konkludieren, dass sich mithilfe von Pipelines massive Performance-Verbesserungen erzielen lassen, solange das System hierfür entsprechend angepasst wird.
 
 \subsubsection{Multi-Core}
-Die Taktfrequenz eines Prozessors ist nicht beliebig erhöhbar. Bei Frequenzen im geringen Gigahertz-Bereich sorgt die entstehende Abwärme dafür, dass sich die Hardware bereits nach kurzer Zeit selber zerstören würde. Ebenfalls wird die Synchronisation der Daten in solchen Frequenzbereichen kompliziert. Um die Leistungsfähigkeit eines Prozessors weiter erhöhen zu können sind Mehrkernprozessoren eingeführt worden. Jeder dieser Kerne besitzt einen eigenen 'Instuction\& Data-Cache', welche mit einem gemeinsamen 'Internal Cache Bus' verbunden sind. Dieser wiederum ist mit einem 'Common Instruction\& Data-Cache' verbunden, welcher die Schnittstelle zu dem 'System Bus' darstellt.\\
-Theoretisch ist somit eine Vervielfachung des Durchsatzes an Aufgaben möglich, welche proportional zu der Anzahl an Kernen ist. Voraussetzung hierfür ist eine optimale Verteilung der Aufgaben auf die Kerne, sowie eine parallele Verarbeitung, Anforderung und Speicherung von Daten. Die Realisierung hiervon ist jedoch nicht trivial. Zudem führt ein Mehrkernprozessor gleichzeitig auch starken Nichtdeterminismus ein, welcher seinen Ursprung in der Verteilung der Aufgaben, Pipelines sowie den individuellen und dem gemeinsamen Cache findet. Des weiteren ist es wichtig, die Kommunikation zwischen den einzelnen Kernen zu gewährleisten, welche zuverlässig und, vor allem anderen, schnell möglich sein muss.\\
+Die Taktfrequenz eines Prozessors ist nicht beliebig erhöhbar. Bei Frequenzen im geringen Gigahertz-Bereich sorgt die entstehende Abwärme dafür, dass sich die Hardware bereits nach kurzer Zeit selber zerstören würde. Ebenfalls wird die Synchronisation der Daten in solchen Frequenzbereichen kompliziert. Um die Leistungsfähigkeit eines Prozessors weiter erhöhen zu können, sind Mehrkernprozessoren eingeführt worden. Jeder dieser Kerne besitzt einen eigenen 'Instuction\& Data-Cache', welche mit einem gemeinsamen 'Internal Cache Bus' verbunden sind. Dieser wiederum ist mit einem 'Common Instruction\& Data-Cache' verbunden, welcher die Schnittstelle zu dem 'System Bus' darstellt.\\
+Theoretisch ist somit eine Vervielfachung des Durchsatzes an Aufgaben möglich, welche proportional zu der Anzahl an Kernen ist. Voraussetzung hierfür ist eine optimale Verteilung der Aufgaben auf die Kerne, sowie eine parallele Verarbeitung, Anforderung und Speicherung von Daten. Die Realisierung hiervon ist jedoch nicht trivial. Zudem führt ein Mehrkernprozessor gleichzeitig auch starken Nichtdeterminismus ein, welcher seinen Ursprung in der Verteilung der Aufgaben, Pipelines sowie den individuellen und dem gemeinsamen Cache findet. Des weiteren ist es wichtig, die Kommunikation zwischen den einzelnen Kernen zu gewährleisten, welche zuverlässig und schnell möglich sein muss.\\
 Bei gründlicher Planung und Gestaltung eines Mehrkernprozessors können enorme Fortschritte in der 'Geschwindigkeit' eines Prozessors erzielt werden, ohne sich um Hitzeentwicklung oder Gatterlaufzeiten Gedanken zu machen. Jedoch bieten sich auch weitaus mehr Aspekte, die anfällig für Fehler sind.
 
 \subsection{CISC/RISC}\label{2.5}
-Eine weitere notwendige Entscheidung bei der Gestaltung eines Systems wird von der Art der Befehlsatzes gestellt. Es gibt zwei vorherrschende Optionen - 'Complex Instruction Set Computers' (CISC) sowie 'Reduces Instruction Set Computers' (RISC). Diese unterscheiden sich in einer Vielzahl an Aspekten, beispielsweise die Anzahl der Befehle, deren Laufzeit und die Komplexität.
+Eine weitere notwendige Entscheidung bei der Gestaltung eines Systems wird von der Art der Befehlsatzes gestellt. Es gibt zwei vorherrschende Optionen - 'Complex Instruction Set Computers' (CISC) sowie 'Reduced Instruction Set Computers' (RISC). Diese unterscheiden sich in einer Vielzahl an Aspekten, beispielsweise die Anzahl der Befehle, deren Laufzeit und die Komplexität.
 
 \subsubsection{Complex Instruction Set Computers}
 Diese Art eines Befehlssatzes bietet eine Vielzahl komplexer Befehle, deren Ziele die Minimalisierung der Laufzeit, Reduktion des Speicherverbrauchs sowie vereinfachte Handhabung sind. Erreicht wird dies durch die Implementierung von frequentiert genutzten Anweisungen.\\
@@ -164,7 +165,7 @@ Als Beispiel diene folgender Befehl:\\
 MULT $\$A, \$B$\\
 \newline
 Dieser Befehl sagt aus, dass die Werte der Register $A$ und $B$ geladen, multipliziert und in dem Register $A$ gespeichert werden. Dabei bezeichnet $\$A$ das Register mit der Nummer A. Die äquivalente Form eines 'RISC' sähe wie folgt aus:\\
-\newpage
+
 LOAD $x$, $\$A$\\ 
 LOAD $y$, $\$B$\\
 PROD $x$, $y$\\
@@ -173,10 +174,10 @@ STORE $\$A$, $x$\\
 Hier werden die Register $A$ und $B$ in die Variablen $x$ und $y$ geladen, multipliziert, in der Variable $x$ zwischengespeichert und anschließend in dem Register $A$ gelagert. Es ist offensichtlich, dass die 'CISC'-Variante weitaus einfacher zu verwenden ist. Ebenfalls wird die Größe dieses Programms um 75\% reduziert, und somit werde weniger Daten von dem Hauptspeicher gelesen. Dies reduziert zusätzlich die Laufzeit des Codes.
 
 \subsubsection{Reduces Instruction Set Computers}
-Am vorangehenden Beispiel wird deutlich, dass sich 'RISC' auf elementare Befehle beschränkt. Der wohl wichtigste Aspekt ist, dass jeder Befehl genau einen Taktzyklus dauert. Durch diese einheitliche Laufzeit werden Pipelines und Parallelismus effizienter nutzbar. Der größte hierdurch entstehende Nutzen folgt daraus, dass ein Interrupt nach jedem Taktzyklus möglich ist. Ebenfalls ist somit kein Fokus auf bestimmte Befehle gelegt, sondern jede mögliche Kombination dieser elementaren Befehle ist denkbar. Ein weiterer Vorteil besteht in der reduzierten Speichernutzung dieser Befehle. Durch eine minimale Anzahl an sehr kompakten Befehlen wird nun ein Bruchteil des von einer 'CISC'-Variante genutzten Speichers benötigt.
+Am vorangehenden Beispiel wird deutlich, dass sich 'RISC' auf elementare Befehle beschränkt. Der wohl wichtigste Aspekt ist, dass jeder Befehl genau einen Taktzyklus dauert. Durch diese einheitliche Laufzeit werden Pipelines und Parallelismus effizienter nutzbar. Der größte hierdurch entstehende Vorteil folgt daraus, dass ein Interrupt nach jedem Taktzyklus möglich ist. Ebenfalls ist somit kein Fokus auf bestimmte Befehle gelegt, sondern jede mögliche Kombination dieser elementaren Befehle ist denkbar. Ein weiterer Vorteil besteht in der reduzierten Speichernutzung dieser Befehle. Durch eine minimale Anzahl an sehr kompakten Befehlen wird nur ein Bruchteil des von einer 'CISC'-Variante genutzten Speichers benötigt.
 
 \subsubsection{Anwendung bei einem DSP}
-In der Regel wird ein 'DSP' mittels eines 'CISC' realisiert. Durch die schnelle Reaktion auf einen Interrupt sowie die geringe Anzahl an benötigten Befehlen eines 'DPS's bietet sich diese Wahl an. Die Implementierung von 'MAC'-Befehlen ist jedoch nicht optional und stellt den wichtigsten Aspekt dieses Systems dar. Der Begriff 'MAC' steht dabei für 'Multiplication-Accumulation' und erfordert für diese Operation genau einen Taktzyklus und ist einer der wichtigsten Befehle für die Verarbeitung von Signalen.
+In der Regel wird ein 'DSP' mittels eines 'CISC' realisiert. Durch die schnelle Reaktion auf einen Interrupt sowie die geringe Anzahl an benötigten Befehlen eines 'DPS's bietet sich diese Wahl an. Die Implementierung von 'MAC'-Befehlen ist jedoch nicht optional und stellt den wichtigsten Aspekt dieses Systems dar. Der Begriff 'MAC' steht dabei für 'Multiplication-Accumulation' und erfordert für diese Operation genau einen Taktzyklus. Dies ist einer der wichtigsten Befehle für die Verarbeitung von Signalen.
 
 \subsection{Scheduling}\label{2.6}
 Jedes nicht triviale System besitzt eine Vielzahl an möglichen Aufgaben, welche in der Regel eine Deadline besitzen. Somit stellt es eine wichtige Herausforderung dar, Aufgaben in der optimalen Reihenfolge abzuarbeiten, um nach Möglichkeit keine Deadline zu verpassen. Zunächst werden triviale Lösungen vorgestellt, und anschließend Überlegungen, welche Deadlines, verschiedene Zustände der Aufgaben sowie deren Frequenz berücksichtigen.
@@ -201,9 +202,9 @@ Jedes nicht triviale System besitzt eine Vielzahl an möglichen Aufgaben, welche
 \end{algorithmic}
 \end{algorithm}
 
-Wird ein Event in unbestimmten Zeitabständen erwartet, so kann die Polled Loop genutzt werden. Sobald das Event auftritt wird die Flag gesetzt. Dies führt innerhalb der Loop dazu, dass das Event behandelt wird und die Flag zurückgesetzt wird. Der Grund für die Pause von $21m$s besteht darin, dass gewisse Events während oder nach deren Ausführung ein unvorhersehbares Verhalten besitzen können. Kann man davon ausgehen, dass dieses Event eine minimale zeitliche Differenz zwischen den einzelnen Ausführungen hat, so kann solch eine Pause eine Robustheit des Systems gegenüber solch eines Verhaltens bieten.\\
+Wird ein Event in unbestimmten Zeitabständen erwartet, so kann die Polled Loop genutzt werden. Sobald das Event auftritt wird die Flag gesetzt. Dies führt innerhalb der Loop dazu, dass das Event behandelt wird und die Flag zurückgesetzt wird. Der Grund für die Pause von $21m$s besteht darin, dass gewisse Events während oder nach deren Ausführung ein unvorhersehbares Verhalten besitzen können. Kann man davon ausgehen, dass dieses Event eine minimale zeitliche Differenz zwischen den einzelnen Ausführungen hat, so kann solch eine Pause eine Robustheit des Systems gegenüber solch einer Anforderung bieten.\\
 Allerdings ist ersichtlich, dass diese Schleife weder spezielle Features bietet, noch die Verarbeitung von mehr als einem Event unterstützt.\\
-Abhilfe für das zweite Problem würde die Einführung von verschiedenen Flags bieten, welche innerhalb der Schleife nacheinander überprüft werden und mit einem eigenen Event verknüpft sind. Dies würde bei einer Vielzahl von Events jedoch dazu führen, dass im schlimmsten Fall jede Flag überprüft wird, ehe die gesetzte Flag bemerkt wird. Der dadurch entstehende Delay kann zu Problemen führen.
+Abhilfe für das zweite Problem würde die Einführung von verschiedenen Flags bieten, welche innerhalb der Schleife nacheinander überprüft werden und mit einem eigenen Event verknüpft sind. Dies würde bei einer Vielzahl von Events jedoch dazu führen, dass im schlimmsten Fall jede andere Flag überprüft wird, ehe die gesetzte Flag bemerkt wird. Der dadurch entstehende Delay kann zu Problemen führen.
 
 \subsubsection{Cyclic Code Structure}
 \begin{algorithm}
@@ -223,8 +224,8 @@ Abhilfe für das zweite Problem würde die Einführung von verschiedenen Flags b
 \end{algorithmic}
 \end{algorithm}
 
-Für die Handhabung von Aufgaben kann, im Gegensatz zu Events ein zyklischer Ansatz verwendet werden. Deren Frequenz kann bestimmt und somit fest implementiert werden, was sie von Events unterscheidet, die in der Regel azyklisch auftreten und eine Flag setzen. Somit werden hier innerhalb eines Durchlaufs alle Aufgaben sequentiell behandelt.\\
-Um Aufgaben mit einer hohen Auftrittsfrequenz besondere Beachtung schenken zu können wird diese Aufgabe innerhalb jedes Durchlaufes mehrmals ausgeführt, im Beispiel \ref{sced2} wäre dies $task\_2$. Sobald jedoch ein schwierigeres Problem vorliegt, so sollte dieser Ansatz nicht gewählt werden. Die 'faire' Verteilung der Aufgaben innerhalb der Schleife, um alle Deadlines erfüllen zu können wird zu einer nicht trivialen Aufgabe. Zudem wird die Länge des Codes der Schleife stark ansteigen, sollten mehrere Aufgaben öfters aufgerufen werden.
+Für die Handhabung von Aufgaben kann, im Gegensatz zu Events, ein zyklischer Ansatz verwendet werden. Deren Frequenz kann bestimmt und somit fest implementiert werden, was sie von Events unterscheidet, die in der Regel azyklisch auftreten und eine Flag setzen. Somit werden hier innerhalb eines Durchlaufs alle Aufgaben sequentiell behandelt.\\
+Um Aufgaben mit einer hohen Auftrittsfrequenz besondere Beachtung schenken zu können wird diese Aufgabe innerhalb jedes Durchlaufes mehrmals ausgeführt, in [\ref{sced2}] wäre dies $task\_2$. Sobald jedoch ein schwierigeres Problem vorliegt, so sollte dieser Ansatz nicht gewählt werden. Die 'faire' Verteilung der Aufgaben innerhalb der Schleife, um alle Deadlines erfüllen zu können, wird zu einer nicht trivialen Aufgabe. Zudem wird die Länge des Codes der Schleife stark ansteigen, sollten mehrere Aufgaben öfters aufgerufen werden.
 
 \subsubsection{Coroutines}
 
@@ -269,9 +270,9 @@ Um Aufgaben mit einer hohen Auftrittsfrequenz besondere Beachtung schenken zu k�
 \end{algorithmic}
 \end{algorithm}
 
-Als Koroutinen werden die in \ref{sced3} erwähnten $task\_a$ und $task\_b$ bezeichnet. Der Dispatcher ruft nacheinander die einzelnen Tasks auf, welche jeweils in Abschnitte unterteilt sind. So wird nach jeder ausgeführten Phase der zugehörige globale Zähler inkrementiert und anschließend die Kontrolle dem Dispatcher zurück gegeben. Anschließend kann die nächste Aufgabe aufgerufen werden. Bei erneutem Aufruf einer AUfgabe wird der jeweils nächste Abschnitt ausgeführt, da der Zähler nun auf einen anderen Zustand hinweist.\\
+Als Koroutinen werden die in [\ref{sced3}] erwähnten $task\_a$ und $task\_b$ bezeichnet. Der Dispatcher ruft nacheinander die einzelnen Tasks auf, welche jeweils in Abschnitte unterteilt sind. So wird nach jeder ausgeführten Phase der zugehörige globale Zähler inkrementiert und anschließend die Kontrolle dem Dispatcher zurück gegeben. Anschließend kann die nächste Aufgabe aufgerufen werden. Bei erneutem Aufruf einer Aufgabe wird der jeweils nächste Abschnitt ausgeführt, da der Zähler nun auf einen anderen Zustand hinweist.\\
 Somit lässt sich pseudo-parallele Ausführung mehrerer Aufgaben realisieren. Durch die Unterteilung in einzelne Abschnitte sind Aufgaben zudem in der Lage, Interrupts besser behandeln zu können.
-\newpage
+
 \subsubsection{Interrupt-Only System}
 \begin{algorithm}
 \captionsource{Interrupt-Only}{\cite[p. 89]{RTS}}
@@ -310,18 +311,18 @@ Somit lässt sich pseudo-parallele Ausführung mehrerer Aufgaben realisieren. Du
 In diesem Beispiel ruft sich das $main$-Programm mittels jump-to-self immer wieder selber auf. Aufgaben werden lediglich mittels Interrupts angekündigt. Der aktuelle Kontext wird gespeichert, die Aufgabe behandelt und der Kontext anschließend geladen. In diesem Beispiel werden alle Interrupts durch die Hardware ausgelöst.\\
 
 \subsection{Erweitertes Scheduling}\label{2.7}
-In fortgeschrittenen System werden höhere Anforderungen an die Verteilung von Aufgaben gestellt. Diese muss dynamisch und unter Berücksichtung der Frequenz, der Priorität und der Laufzeit stattfinden. Dazu wird im Folgenden zunächst die Grundlage dazu geliefert, und anschließend werden übliche Realisierungen vorgestellt.
+In fortgeschrittenen System werden höhere Anforderungen an die Verteilung von Aufgaben gestellt. Diese muss dynamisch und unter Berücksichtung der Frequenz, der Priorität und der Laufzeit der Aufgaben stattfinden. Dazu wird im Folgenden zunächst die Grundlage dazu geliefert, und anschließend werden übliche Realisierungen vorgestellt.
 
 \subsubsection{Grundlegende Begriffe}
 \begin{definition}{Priorität}\\
-Die Priorrität ist eine Eigenschaft, die einer Aufgabe zugeordnet wird und in der Regel unveränderlich ist. Aufgaben können solche geringerer Priorität unterbrechen und zuerst ausgeführt werden, wenn diese initialisiert werden.
+Die Priorität ist eine Eigenschaft, die einer Aufgabe zugeordnet wird und in der Regel unveränderlich ist. Aufgaben können solche geringerer Priorität unterbrechen und zuerst ausgeführt werden, wenn diese initialisiert werden.
 \end{definition}
 Sollte diese Eigenschaft für ein System genutzt werden, so ist es wichtig, Prioritäten sorgsam zu wählen. Jede Unterbrechung erzeugt einen weiteren Delay, hervorgerufen durch das Speichern und Laden des aktuellen Zustandes. Zudem sorgt dies für Nichtdeterminismus.
 \begin{definition}{Zeitfenster}\\
 Ein Zeitfenster ist ein einer Aufgabe zugeordnete Zeitspanne, in welcher diese ausgeführt wird.
 \end{definition}
 Wird solch ein Zeitfenster genutzt, die Aufgabe jedoch nicht in der vorgegebenen Zeitspanne beendet, so wird die Aufgabe unterbrochen, der aktuelle Inhalt der Variablen gespeichert und bei erneuter Ausführung aufgerufen.\\
-Viele Systeme sind so erstellt, dass die Zeitfenster nur ein Bruchteil der eigentlichen Laufzeit ausmachen. Somit wird eine Aufgabe mehrmals unterbrochen, ehe diese fertig ist. Somit kann zu jedem Zeitpunkt schnell auf Interrupts reagiert werden, da einige Systeme die Unterbrechung von einer Aufgabe nicht zulassen, sondern die mit der Unterbrechung verknüpfte Aufgabe erst nach dem aktuell Zeitfenster ausführen.
+Viele Systeme sind so erstellt, dass die Zeitfenster nur ein Bruchteil der eigentlichen Laufzeit ausmachen. Somit wird eine Aufgabe mehrmals unterbrochen, ehe diese fertig ist. So kann zu jedem Zeitpunkt schnell auf Interrupts reagiert werden, da einige Systeme die Unterbrechung von einer Aufgabe nicht zulassen, sondern die mit der Unterbrechung verknüpfte Aufgabe erst nach dem aktuell Zeitfenster ausführen.
 \begin{definition}{TCB}\\
 Ein TCB('Task Control Block') ist eine Datenstruktur, welche einer Aufgabe zugewiesen wird. In dieser werden unter anderem Priorität, Status, zugeordnere Register, Programmzähler sowie ein Pointer auf den nächsten TCB gespeichert.
 \end{definition}
@@ -335,10 +336,10 @@ Eine Aufgabe mit dem Zustand 'Bereit' steht für möglichst baldige Ausführung 
 Befindet sich eine Aufgabe in dem Zustand 'Wird ausgeführt', so ist dies die aktuelle Aufgabe des Prozessors. Eine Aufgabe kann diesen Zustand nur erreichen, wenn sie zuvor 'Bereit' war, oder wenn sie gerade angelegt worden ist und keine andere Aufgabe behandelt wird.\\
 Nach erfolgreicher Ausführung wandert eine Aufgabe in den Zustand 'Unterbrochen'. Sie wird erst wieder durch einen entsprechenden Befehl auf den Zustand 'Bereit' gesetzt.\\
 Wird eine Aufgabe jedoch während der Ausführung unterbrochen, da ihre maximale Laufzeit erreicht ist, so wird der Zustand erneut auf 'Bereit' gesetzt, und die aktuellen Variablen werden gespeichert, um mit der Ausführung fortfahren zu können.\\
-Der verbleibende Zustand 'inaktiv' wird nur dann genutzt, wenn die Anzahl an TCBs festgesetzt ist. Diese Aufgaben existieren, können jedoch aktuell nicht ausgeführt werden.
+Der verbleibende Zustand 'inaktiv' wird nur dann genutzt, wenn die Anzahl an gleichzeitig aktiven TCBs festgesetzt ist. Diese Aufgaben existieren, können jedoch aktuell nicht ausgeführt werden.
 
 \subsubsection{Round-Robin Scheduling}
-Round-Robin Scheduling bietet die einfachste Form eines Systems, welches mehrere in Segmente unterteilte Aufgaben behandelt. Dies geschieht, indem ein Zeitfenster $t_\delta$ bestimmt wird. Dieses wird in einem zyklischen Verfahren jeder Aufgabe zugeordnet, welche in diesem Zeitfenster behandelt wird. Nach Ablauf der Zeit oder Beendigung der Aufgabe wird diese in den Hintergrund geschoben, um die nächste Aufgabe abzuarbeiten. So kann das System zu jedem Zeitpunkt nach spätestens $t_\delta$ unterbrochen werden, was zu einer guten Reaktionszeit für Interrupts führt.\\
+Round-Robin Scheduling bietet die einfachste Form eines Systems, welches mehrere in Segmente unterteilte Aufgaben behandelt. Dies geschieht, indem ein Zeitfenster $t_\delta$ bestimmt wird. Dieses wird in einem zyklischen Verfahren jeder Aufgabe zugeordnet, welche in diesem Zeitfenster behandelt wird. Nach Ablauf der Zeit oder Beendigung der Aufgabe wird diese in den Hintergrund geschoben, um die nächste Aufgabe abzuarbeiten. So kann das System zu jedem Zeitpunkt nach spätestens $t_\delta$ unterbrochen werden, was zu einer abschätzbaren und vergleichsweise guten Reaktionszeit für Interrupts führt.\\
 Zu einer verbesserten Handhabung lassen sich auch hier Prioritäten bestimmten, sodass eine Aufgabe höherer Priorität zu jedem beliebigen Zeitpunkt eintreten und alle Tasks unterliegender Priorität unterbrechen kann, während deren jeweiliges Zeitfenster weiter abläuft. Dies führt wiederum zu einer komplizierteren Wartung. Beispielsweise ist es möglich, dass eine Aufgabe hoher Priorität immer die Aufgabe $n_i$ unterbricht, so dass diese niemals behandelt wird.
 
 \subsubsection{Cyclic Code Scheduling}
@@ -361,26 +362,20 @@ Dabei ist der größte Unterschied zu Round-Robin neben diesen Bedingungen die T
 Deswegen wird der genaue Ablauf zu Beginn jedes Zyklus neu berechnet, um aperiodisch auftretende Aufgaben berücksichtigen zu können.
 
 \subsubsection{Fixed-Priority Scheduling: Rate-Monotonic Approach}
-\label{2.7.5}
-Bei diesem Ansatz wird jeder Aufgabe eine Priorität entsprechend ihrer Periode $p_i$ zugeteilt. Dabei ist zu beachten, dass Aufgaben niedrigerer Periodendauer eine höhere Priorität erhalten. Wie in \cite[p. 102f]{RTS} bewiesen, resultiert dieser Ansatz in der optimalen Verteilung der Aufgaben. Ebenfalls wird eine obere Grenze des 'utilization factors' in Abhängigkeit der ANzahl an Aufgaben gezeigt.\\
+\label{2.7.4}
+Bei diesem Ansatz wird jeder Aufgabe eine Priorität entsprechend ihrer Periode $p_i$ zugeteilt. Dabei ist zu beachten, dass Aufgaben niedrigerer Periodendauer eine höhere Priorität erhalten. Wie in \cite[p. 102f]{RTS} bewiesen, resultiert dieser Ansatz in der optimalen Verteilung der Aufgaben. Ebenfalls wird eine obere Grenze des 'utilization factors' in Abhängigkeit der Anzahl an Aufgaben gezeigt.\\
 \begin{definition}{Utilization factor}\\
 Der 'Utilization factor' (U) ergibt sich über die Summe der Quotienten der Laufzeit und Periodendauer der einzelnen Tasks, also:\\
 $U = \sum\limits_{i=1}^n \frac{e_i}{p_i}$\\
 \end{definition}
-Dabei gibt dieser Wert $U$ einen Prozentsatz der Zeit an, welcher von Aufgaben genutzt wird. Dabei enntspräche $U=0.87$ einer Auslastung der CPU von 87\% bei optimaler Aufteilung der Aufgaben.\\
+Dabei gibt dieser Wert $U$ einen Prozentsatz der Zeit an, welcher von Aufgaben genutzt wird. Dabei entspräche $U=0.87$ einer Auslastung der CPU von 87\% bei optimaler Aufteilung der Aufgaben.\\
 Für dieses Verfahren existiert die Grenze $n(2^{1/n} - 1)$. Liegt der Wert $U$ für $n$ periodische Aufgaben über diesem Wert, so ist nicht garantiert, dass Fixed-Priority Scheduling eine Lösung bietet, bei der keine Deadlines verletzt werden. Unterhalb dieser Grenze jedoch funktioniert das Verfahren in jedem Fall.
 
 \subsubsection{Dynamic Priority Scheduling: Earliest Deadline First Approach}
 Wie der Name suggeriert, so wird hier zu jedem Zeitpunkt die Aufgabe behandelt, deren Deadline unmittelbar bevorsteht. Wird eine Aufgabe aktiviert, so wird geprüft, ob deren Deadline vor der der aktuellen Aufgabe liegt. Ist dies der Fall, so wird die aktuelle Aufgabe unterbrochen und stattdessen die neue behandelt.\\
 Dieses Schedulingverfahren wird zu Laufzeit des Systems ausgeführt, nicht zu Kompilierzeit, was bei den anderen vorgestellten Verfahren der Fall war.\\
-Dank dieser Verteilung der Aufgaben ist es möglich, ein System mit einem Wert von $U \leq 1$ zu realisieren und zu verhindern, dass Deadlines verpasst werden. Hier liegt der größte Vorteil gegenüber dem in \ref{2.7.5} erläuterten Verfahren.\\
-Der Nachteil liegt in der Dynamik, mit der die Aufgaben behandelt werden. Fixed-Priority Scheduling ist berechenbar, da die Priorität der Aufgaben statisch und abhängig von deren Periodendauer ist. Somit wird mit einem dynamischen System Nichtdeterminismus eingeführt. Zudem ist ein statisches Verfahren robuster gegenüber verpassten Deadlines. Wird bei dem in diesem Kapitel eingeführten Verfahren eine Deadlines verpasst, so führt dies in der Regel zu weiteren verpassten Deadlines und schließlich zu einem Ausfall des Systems. Bei dem Verfahren in \ref{2.7.5} würde diese Aufgabe ihre Deadline in einem periodischen Zyklus verpassen, die restlichen Aufgaben würden jedoch weiterhin rechtzeitig ausgeführt werden können.
+Dank dieser Verteilung der Aufgaben ist es möglich, ein System mit einem Wert von $U \leq 1$ zu realisieren und zu verhindern, dass Deadlines verpasst werden. Hier liegt der größte Vorteil gegenüber dem in [\ref{2.7.4}] erläuterten Verfahren.\\
+Der Nachteil liegt in der Dynamik, mit der die Aufgaben behandelt werden. Fixed-Priority Scheduling ist berechenbar, da die Priorität der Aufgaben statisch und abhängig von deren Periodendauer ist. Somit wird mit einem dynamischen System Nichtdeterminismus eingeführt. Zudem ist ein statisches Verfahren robuster gegenüber verpassten Deadlines. Wird bei dem Earliest Deadline First Verfahren eine Deadlines verpasst, so führt dies in der Regel zu weiteren verpassten Deadlines und schließlich zu einem Ausfall des Systems. Bei dem Verfahren in [\ref{2.7.4}] würde diese Aufgabe ihre Deadline in einem periodischen Zyklus verpassen, die restlichen Aufgaben würden jedoch weiterhin rechtzeitig ausgeführt werden können.
 
 \subsubsection{Anwendung bei einem DSP}
-Bei einem 'digital signal processor' sind in der Regel sowohl Aufgaben sowie deren Ausführungs- und Periodendauer bekannt. Somit lässt sich solch ein System mithilfe eines statischen Scheduling Verfahrens realisieren, wodurch overhead sowie nicht-determinismus in diesem Teil eliminiert werden\cite{Scheduling}. Die Unterbrechung anderer Aufgaben ist in einem DSP in der Regel nicht möglich, wodurch sich beispielsweise das in \ref{2.7.3} vorgestellte Verfahren anbietet.
-
-
-
-%\begin{definition}{}
-%\end{definition}
-%\subsection{System Service}\label{2.8}
+Bei einem 'digital signal processor' sind in der Regel sowohl Aufgaben als auch deren Ausführungs- und Periodendauer bekannt. Somit lässt sich solch ein System mithilfe eines statischen Scheduling Verfahrens realisieren, wodurch Overhead sowie nicht-Determinismus in diesem Teil eliminiert werden\cite{Scheduling}. Die Unterbrechung anderer Aufgaben ist in einem DSP in der Regel nicht möglich, wodurch sich beispielsweise das in [\ref{2.7.3}] vorgestellte Verfahren anbietet.
